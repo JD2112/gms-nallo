@@ -14,14 +14,12 @@
         <link rel="prev" href="../output/">
       
       
-        <link rel="next" href="../CITATIONS/">
-      
       
         
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -481,33 +479,6 @@
   
 
     
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CITATIONS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Citations
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -637,6 +608,14 @@
 </thead>
 <tbody>
 <tr>
+<td><code>skip_annotate_paralogs</code></td>
+<td>Skip paralogs (Paraphase) annotation</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>skip_qc</code></td>
 <td>Skip QC of reads</td>
 <td><code>boolean</code></td>
@@ -669,8 +648,16 @@
 <td></td>
 </tr>
 <tr>
-<td><code>skip_methylation_pileups</code></td>
-<td>Skip generation of methylation pileups</td>
+<td><code>skip_methylation_calling</code></td>
+<td>Skip methylation calling</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>skip_methylation_annotation</code></td>
+<td>Skip methylation annotation</td>
 <td><code>boolean</code></td>
 <td>False</td>
 <td></td>
@@ -693,10 +680,26 @@
 <td></td>
 </tr>
 <tr>
+<td><code>skip_chromograph</code></td>
+<td>Skip chromograph image generation. True if both plot_chromograph_coverage and plot_chromograph_autozygosity are set to false.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>skip_peddy</code></td>
 <td>Skip peddy</td>
 <td><code>boolean</code></td>
 <td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>skip_sambamba_depth</code></td>
+<td>Skip sambamba depth. True unless <code>--sambamba_regions</code> is provided.</td>
+<td><code>boolean</code></td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
@@ -743,6 +746,22 @@
 <tr>
 <td><code>skip_rank_variants</code></td>
 <td>Skip ranking of short variants</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>skip_prepare_gens_input</code></td>
+<td>Skip preparing input data for Gens</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>skip_sex_check</code></td>
+<td>Skip sex check</td>
 <td><code>boolean</code></td>
 <td>False</td>
 <td></td>
@@ -893,7 +912,15 @@
 <td></td>
 </tr>
 <tr>
-<td><code>methylation_call_regions</code></td>
+<td><code>methbat_regions</code></td>
+<td>A tsv file with only regions of interest (example here: https://github.com/PacificBiosciences/MethBat/blob/main/data/cpgIslandExt.sorted.hg38.tsv) or with both regions and background cohort values (example here: https://github.com/PacificBiosciences/MethBat/blob/main/data/meth_profile_model.tsv), made with methbat build</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>modkit_call_regions</code></td>
 <td>A BED file with regions of interest for the methylation pileups. By default this is the same as <code>target_regions</code>.</td>
 <td><code>string</code></td>
 <td></td>
@@ -901,10 +928,26 @@
 <td></td>
 </tr>
 <tr>
+<td><code>mosdepth_regions</code></td>
+<td>A BED file with regions of interest used in mosdepth. By default this is the same as <code>qc_regions</code>.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mosdepth_d4_output</code></td>
+<td>Should mosdepth output d4-files.</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>bigwig_modcodes</code></td>
 <td>Comma-separated list of modification codes to include in the bigWig methylation visualization file. Defaults to 5hmC and 5mC. See https://samtools.github.io/hts-specs/SAMtags.pdf for a complete list.</td>
 <td><code>string</code></td>
-<td>h,m</td>
+<td>m</td>
 <td></td>
 <td></td>
 </tr>
@@ -989,8 +1032,72 @@
 <td></td>
 </tr>
 <tr>
+<td><code>gens_baf_positions</code></td>
+<td>Tab-delimited file with variant positions used to calculate B-allele frequencies for Gens inputs.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gens_panel_of_normals_female</code></td>
+<td>Panel of normals of female samples (HDF5) used to standardize coverage for Gens inputs (https://gatk.broadinstitute.org/hc/en-us/articles/360040510031-CreateReadCountPanelOfNormals). This can be generated using https://github.com/nf-core/createpanelrefs. For long reads we have used mosdepth to calculate coverage per-bin rather than counting reads per bin, and then created a panel of normals using the GATK command.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gens_panel_of_normals_male</code></td>
+<td>Panel of normals of male samples (HDF5) used to standardize coverage for Gens inputs (https://gatk.broadinstitute.org/hc/en-us/articles/360040510031-CreateReadCountPanelOfNormals). This can be generated using https://github.com/nf-core/createpanelrefs. For long reads we have used mosdepth to calculate coverage per-bin rather than counting reads per bin, and then created a panel of normals using the GATK command.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gens_coverage_bins</code></td>
+<td>Bed file with bins for which to calculate coverage. Typically 100bp bins across the genome is used in Gens. It should be the same as the one used to prepare the panel of normals.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>strdrop_training_set_json</code></td>
+<td>A JSON file containing the training set for strdrop</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>paraphrase_output_format</code></td>
+<td>Output format for paralog annotation from Paraphrase. Either <code>tsv</code> or <code>json</code>. (accepted: <code>tsv</code>|<code>json</code>)</td>
+<td><code>string</code></td>
+<td>tsv</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>paraphrase_rules</code></td>
+<td>A file path to a YAML file with rules for paraphrase to use when annotating paralogs. For an example, see: https://github.com/Clinical-Genomics/paraphrase/blob/main/test-data/rules.yaml.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>peddy_sites</code></td>
 <td>A file path to a VCF of known polymorphic sites for peddy. You may need to create a custom sites file if you have incomplete or targeted data.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sambamba_regions</code></td>
+<td>A BED file with regions of interest used in sambamba depth. By default this is the same as <code>qc_regions</code>.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1005,26 +1112,34 @@
 <td></td>
 </tr>
 <tr>
+<td><code>create_maf_track</code></td>
+<td>Whether to create a MAF track from SNV calls when calling SVs with HiFiCNV or Sawfish. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Defaults to <code>true</code></td>
+<td><code>boolean</code></td>
+<td>True</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>create_hificnv_maf_track</code></td>
+<td>Whether to create a MAF track from SNV calls when calling CNVs with HiFiCNV. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Defaults to <code>create_maf_track</code></td>
+<td><code>boolean</code></td>
+<td>True</td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>create_sawfish_maf_track</code></td>
+<td>Whether to create a MAF track from SNV calls when calling SVs with Sawfish. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Defaults to <code>create_maf_track</code></td>
+<td><code>boolean</code></td>
+<td>True</td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
 <td><code>modules_testdata_base_path</code></td>
 <td>Base URL or local path to location of modules test dataset files</td>
 <td><code>string</code></td>
 <td>https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/</td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
-<td><code>pipelines_testdata_base_path</code></td>
-<td>Base URL or local path to location of pipeline test dataset files</td>
-<td><code>string</code></td>
-<td>https://raw.githubusercontent.com/genomic-medicine-sweden/test-datasets/4645adc45ba1ea0363b19ba3ef3c52d62193816f/</td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
-<td><code>trace_report_suffix</code></td>
-<td>Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.</td>
-<td><code>string</code></td>
-<td></td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1047,6 +1162,14 @@
 <tr>
 <td><code>fasta</code></td>
 <td>Reference genome</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>fai</code></td>
+<td>Reference genome index file</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1228,6 +1351,46 @@
 <td></td>
 <td>True</td>
 </tr>
+<tr>
+<td><code>pipelines_testdata_base_path</code></td>
+<td>Base URL or local path to location of pipeline test dataset files</td>
+<td><code>string</code></td>
+<td>https://raw.githubusercontent.com/genomic-medicine-sweden/test-datasets/59c411038dac1e4dab2d745c80d382f047433539/</td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>trace_report_suffix</code></td>
+<td>Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>help</code></td>
+<td>Display the help message.</td>
+<td><code>['boolean', 'string']</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>help_full</code></td>
+<td>Display the full detailed help message.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>show_hidden</code></td>
+<td>Display hidden parameters in the help message (only works when --help or --help_full are provided).</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <h2 id="workflow-options">Workflow options</h2>
@@ -1244,6 +1407,22 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>bcftools_roh_af_tag</code></td>
+<td>AF-tag that variants have been annotated with for use in the chromograph subworkflow. By default set to <code>--chromograph_af_tag</code>.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>chromograph_af_tag</code></td>
+<td>AF-tag to use in the chromograph subworkflow to generate plots of autozygosity. SNVs need to be annotated with allele frequencies specified by this tag for autozygosity plotting to work.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 <tr>
 <td><code>preset</code></td>
 <td>Enable or disable certain parts of the pipeline by default, depending on data type (<code>revio</code>, <code>pacbio</code>, <code>ONT_R10</code>) (accepted: <code>revio</code>|<code>pacbio</code>|<code>ONT_R10</code>)</td>
@@ -1286,7 +1465,7 @@
 </tr>
 <tr>
 <td><code>snv_caller</code></td>
-<td>Which short variant software to use (<code>deepvariant</code>) (accepted: <code>deepvariant</code>)</td>
+<td>Which short variant software to use (<code>deepvariant</code>) (accepted: <code>deepvariant</code>|<code>sentieon</code>)</td>
 <td><code>string</code></td>
 <td>deepvariant</td>
 <td></td>
@@ -1297,6 +1476,22 @@
 <td>Which caller to use for short tandem repeat expansions (TRGT or STRdust). (accepted: <code>trgt</code>|<code>strdust</code>)</td>
 <td><code>string</code></td>
 <td>trgt</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>paraphrase_genes</code></td>
+<td>An optional comma-separated list of genes to run Paraphrase on for paralog annotation. By default all genes called by paraphase are used.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>paraphrase_skip_keys</code></td>
+<td>An optional comma-separated list of keys to skip when running Paraphrase. By default the default skip keys are determined by Paraphrase.</td>
+<td><code>string</code></td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
@@ -1325,6 +1520,54 @@
 <td></td>
 </tr>
 <tr>
+<td><code>run_methbat</code></td>
+<td>Run methbat for methylation analysis, set to <code>true</code> by default when <code>--preset revio</code> is active.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>run_modkit</code></td>
+<td>Run modkit for methylation analysis, set to <code>true</code> by default when <code>--preset ONT_R10</code> is active.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>methbat_male_label</code></td>
+<td>Label used for male samples in methbat profile.</td>
+<td><code>string</code></td>
+<td>MALE</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>methbat_female_label</code></td>
+<td>Label used for female samples in methbat profile.</td>
+<td><code>string</code></td>
+<td>FEMALE</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>modkit_modified_bases</code></td>
+<td>Modkit modified bases, separated by space. E.g. '5mC 5hmC'</td>
+<td><code>string</code></td>
+<td>5mC</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mitochondrial_caller</code></td>
+<td>Which mitochondrial caller to use for mitochondrial variant calling (<code>deepvariant</code>)</td>
+<td><code>string</code></td>
+<td>deepvariant</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>alignment_processes</code></td>
 <td>If alignment_processes is bigger than 1, input files will be split and aligned in parallel to reduce processing time.</td>
 <td><code>integer</code></td>
@@ -1334,7 +1577,7 @@
 </tr>
 <tr>
 <td><code>snv_calling_processes</code></td>
-<td>If snv_calling_processes is bigger than 1, short variant calling will be done in parallel to reduce processing time.</td>
+<td>If snv_calling_processes is bigger than 1, short variant calling will be done in parallel to reduce processing time. Must be <code>1</code> when <code>--snv_caller sentieon</code> is used.</td>
 <td><code>integer</code></td>
 <td>13</td>
 <td></td>
@@ -1345,6 +1588,22 @@
 <td>VEP cache version</td>
 <td><code>integer</code></td>
 <td>110</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>vep_mitochondrial_genome_distance</code></td>
+<td>The distance parameter used in VEP for mitochondrial SNVs</td>
+<td><code>integer</code></td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>vep_nuclear_genome_distance</code></td>
+<td>The distance parameter used in VEP for nuclear SNVs</td>
+<td><code>integer</code></td>
+<td>5000</td>
 <td></td>
 <td></td>
 </tr>
@@ -1405,16 +1664,24 @@
 <td>True</td>
 </tr>
 <tr>
-<td><code>extra_modkit_options</code></td>
-<td>Extra options to modkit, used for test profile.</td>
+<td><code>extra_hifiasm_options</code></td>
+<td>Extra options to hifiasm, used for test profile.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
 <td>True</td>
 </tr>
 <tr>
-<td><code>extra_vep_options</code></td>
-<td>Extra options to VEP, used for test profile.</td>
+<td><code>extra_methbat_profile_options</code></td>
+<td>Extra options to methbat profile.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>extra_modkit_options</code></td>
+<td>Extra options to modkit, used for test profile.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1429,8 +1696,16 @@
 <td>True</td>
 </tr>
 <tr>
-<td><code>extra_hifiasm_options</code></td>
-<td>Extra options to hifiasm, used for test profile.</td>
+<td><code>extra_sawfish_options</code></td>
+<td>Extra options to Sawfish, used for test profile.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>extra_vep_options</code></td>
+<td>Extra options to VEP, used for test profile.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1445,10 +1720,266 @@
 <td>True</td>
 </tr>
 <tr>
+<td><code>extra_somalier_relate_infer_options</code></td>
+<td>Extra options to somalier relate infer, used for test profile.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>genmod_compound_snv_penalty</code></td>
+<td>Genmod compound penalty for SNVs.</td>
+<td><code>integer</code></td>
+<td>6</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_snv_threshold</code></td>
+<td>Genmod compound threshold for SNVs.</td>
+<td><code>integer</code></td>
+<td>9</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_sv_penalty</code></td>
+<td>Genmod compound penalty for SVs.</td>
+<td><code>integer</code></td>
+<td>6</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_sv_threshold</code></td>
+<td>Genmod compound threshold for SVs.</td>
+<td><code>integer</code></td>
+<td>9</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_singleton_snv_penalty</code></td>
+<td>Genmod compound penalty for SNVs. Applied in families with an affected individual without two parents. By default same as <code>--genmod_compound_snv_penalty</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_singleton_snv_threshold</code></td>
+<td>Genmod compound threshold for SNVs. Applied in families with an affected individual without two parents. By default same as <code>--genmod_compound_snv_threshold</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_singleton_sv_penalty</code></td>
+<td>Genmod compound penalty for SVs. Applied in families with an affected individual without two parents. By default same as <code>--genmod_compound_sv_penalty</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_singleton_sv_threshold</code></td>
+<td>Genmod compound threshold for SVs. Applied in families with an affected individual without two parents. By default same as <code>--genmod_compound_sv_threshold</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_trio_snv_penalty</code></td>
+<td>Genmod compound penalty for SNVs. Applied in families with at least one affected individual with two parents. By default same as <code>--genmod_compound_snv_penalty</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_trio_snv_threshold</code></td>
+<td>Genmod compound threshold for SNVs. Applied in families with at least one affected individual with two parents. By default same as <code>--genmod_compound_snv_threshold</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_trio_sv_penalty</code></td>
+<td>Genmod compound penalty for SVs. Applied in families with at least one affected individual with two parents. By default same as <code>--genmod_compound_sv_penalty</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_compound_trio_sv_threshold</code></td>
+<td>Genmod compound threshold for SVs. Applied in families with at least one affected individual with two parents. By default same as <code>--genmod_compound_sv_threshold</code>.</td>
+<td><code>integer</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>plot_chromograph_autozygosity</code></td>
+<td>Whether to plot chromograph autozygosity plots in the chromograph subworkflow. This requires SNVs to be annotated with allele frequencies, and is therefore false by default unless <code>--bcftools_roh_af_tag</code> and <code>--rhocallviz_af_tag</code> have been set, in which case it is assumed that the user has annotated the SNVs with the correct tag.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>plot_chromograph_coverage</code></td>
+<td>Whether to plot chromograph coverage plots in the chromograph subworkflow.</td>
+<td><code>boolean</code></td>
+<td>True</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>pre_vep_snv_filter_expression</code></td>
 <td>An expression that is passed to bcftools view to filter SNVs before being annotated with VEP, e.g. --pre_vep_snv_filter_expression "-e 'INFO/AQ&gt;60'". The expression applies to both the clinical and the research VCFs.</td>
 <td><code>string</code></td>
 <td>None</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rhocallviz_af_tag</code></td>
+<td>AF-tag that variants have been annotated with, for use in the chromograph subworkflow. By default set to <code>--chromograph_af_tag. |</code>string`</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rhocallviz_min_af</code></td>
+<td>Minimum allele frequency for variants to be included in rhocall viz within the chromograph subworkflow.</td>
+<td><code>number</code></td>
+<td>0.0001</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rhocallviz_min_qual</code></td>
+<td>Minimum quality for variants to be included in rhocall viz within the chromograph subworkflow.</td>
+<td><code>number</code></td>
+<td>10.0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>tiddit_bin_size</code></td>
+<td>Bin size to use for TIDDIT coverage wig generation in the chromograph subworkflow.</td>
+<td><code>integer</code></td>
+<td>500</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_model_bundle</code></td>
+<td>The location of the DNAscope model bundle. Model bundle files can be found in the sentieon-models Github repository.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_tech</code></td>
+<td>Sequencing technology used to generate the reads. Supported arguments are ONT or HiFi. (accepted: <code>HiFi</code>|<code>ONT</code>)</td>
+<td><code>string</code></td>
+<td>HiFi</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_male_haploid_bed</code></td>
+<td>Interval in the reference to restrict haploid variant calling for males, in BED file format.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_male_diploid_bed</code></td>
+<td>Interval in the reference to restrict diploid variant calling for males, in BED file format.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_female_diploid_bed</code></td>
+<td>Interval in the reference to restrict diploid variant calling for females, in BED file format.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>strdrop_fraction</code></td>
+<td>Case average adjusted sequencing depth ratio cutoff in strdrop.</td>
+<td><code>number</code></td>
+<td>0.66</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>strdrop_alpha</code></td>
+<td>Unadjusted probability confidence level for coverage test in strdrop.</td>
+<td><code>number</code></td>
+<td>0.18</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>strdrop_edit</code></td>
+<td>Allele similarity Levenshtein edit distance ratio cutoff in strdrop.</td>
+<td><code>number</code></td>
+<td>0.9</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sniffles_min_support_reads</code></td>
+<td>Minimum number of reads to support a SV in Sniffles.</td>
+<td><code>number</code></td>
+<td>3</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sniffles_min_segment_length</code></td>
+<td>Discard a read if none of its segment is larger than this in Sniffles.</td>
+<td><code>number</code></td>
+<td>500</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sniffles_min_heterozygous_allele_frequency</code></td>
+<td>Threshold on heterozygous allele frequency in Sniffles (0-1).</td>
+<td><code>number</code></td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sniffles_min_sv_size</code></td>
+<td>Minimum length of SV to be reported in Sniffles.</td>
+<td><code>number</code></td>
+<td>50</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sawfish_min_sv_size</code></td>
+<td>Co-linear SVs must have either an insertion or deletion of this size or greater to be included in the output in Sawfish. All other SV evidence patterns such as those consistent with duplications, inversions and translocations will always be included in the output.</td>
+<td><code>number</code></td>
+<td>50</td>
 <td></td>
 <td></td>
 </tr>
@@ -1505,22 +2036,6 @@
           </a>
         
         
-          
-          <a href="../CITATIONS/" class="md-footer__link md-footer__link--next" aria-label="Next: Citations">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                Citations
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
-            </div>
-          </a>
-        
       </nav>
     
   
@@ -1549,10 +2064,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
