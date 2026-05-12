@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nallo Report - Clinical Genomics</title>
+
+    <!-- External Assets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.0.0/styles/ag-grid.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/ag-grid-community@30.0.0/styles/ag-theme-alpine.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@30.0.0/dist/ag-grid-community.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/igv@2.15.5/dist/igv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 0 0 1.5rem 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tabs {
+            border-bottom: none;
+            margin-top: -1.2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-link {
+            border: none !important;
+            color: rgba(40, 34, 34, 0.7);
+            font-weight: 600;
+            padding: 1.2rem 2.5rem;
+            border-radius: 0.8rem 0.8rem 0 0;
+            background: transparent !important;
+        }
+
+        .nav-link.active {
+            background: white !important;
+            color: #1e3c72 !important;
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-wrap {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        .section-title {
+            border-left: 5px solid var(--accent-color);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e3c72;
+        }
+
+        #igv-container {
+            border: 1px solid #dee2e6;
+            border-radius: 0.8rem;
+            min-height: 800px;
+            background: white;
+        }
+
+        .ag-theme-alpine {
+            height: 480px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: auto;
+            resize: vertical;
+        }
+
+        .status-pill {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .bg-asm {
+            background-color: #fff4e6;
+            color: #d9480f;
+            border: 1px solid #ffd8a8;
+        }
+
+        .bg-methyl {
+            background-color: #ebfbee;
+            color: #2b8a3e;
+            border: 1px solid #b2f2bb;
+        }
+
+        .bg-unmeth {
+            background-color: #f3f0ff;
+            color: #5f3dc4;
+            border: 1px solid #d0bfff;
+        }
+
+        .bg-inconclusive {
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+
+        .bg-normal {
+            background-color: #e7f5ff;
+            color: #1971c2;
+            border: 1px solid #a5d8ff;
+        }
+
+        .text-asm {
+            color: #d9480f !important;
+        }
+
+        .bg-qc-partial {
+            background-color: #fff9db;
+            color: #f08c00;
+            border: 1px solid #ffe066;
+        }
+
+        .methyl-bar-wrap {
+            height: 12px;
+            background: #eee;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            margin-top: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .bar-h1 {
+            background: #3498db;
+        }
+
+        .bar-h2 {
+            background: #e74c3c;
+        }
+
+        .log-panel {
+            background: #212529;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            padding: 10px;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .stat-card {
+            border-radius: 12px;
+            padding: 1.5rem !important;
+            text-align: center;
+            background: #fff;
+            border: 1px solid #eef2f7;
+            transition: all 0.3s ease;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .stat-card .h4 {
+            font-size: 2.2rem !important;
+            font-weight: 900 !important;
+            color: #2c3e50;
+            margin: 0.2rem 0;
+            line-height: 1;
+        }
+
+        .stat-card .text-muted {
+            font-size: 0.8rem !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #95a5a6 !important;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .small {
+            font-weight: 700;
+        }
+
+        footer {
+            background: #f1f3f5;
+            padding: 1.2rem 2.5rem;
+            font-size: 0.8rem;
+            color: #495057;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .diag-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .diag-card {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            text-align: center;
+        }
+
+        .diag-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2a5298;
+            display: block;
+            margin: 0.5rem 0;
+        }
+        .sidebar-hidden {
+            display: none !important;
+        }
+
+        .main-full {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+
+        .table-container-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 10000 !important;
+            background: white !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            border-radius: 0 !important;
+        }
+
+        #myGrid.fullscreen-grid {
+            height: calc(100vh - 120px) !important;
+        }
+
+        .toggle-btn {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            opacity: 0.8;
+        }
+
+        .diag-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hero-section text-center position-relative">
+        <button class="btn btn-sm btn-light position-absolute start-0 ms-4 top-50 translate-middle-y shadow-sm" onclick="toggleSidebar()">
+            <i class="bi bi-layout-sidebar-inset"></i> <span id="sidebar-toggle-text">Hide Sidebar</span>
+        </button>
+        <h1 class="fw-bold mb-1">gms-nallo: Methylation Analysis Dashboard</h1>
+        <div class="d-flex justify-content-center gap-2 mt-2">
+            <span class="badge bg-white text-primary shadow-sm">gms-nallo v0.12.0</span>
+            <span class="badge bg-white text-primary shadow-sm">Genome: GRCh38</span>
+        </div>
+    </div>
+
+    <div class="content-wrap container-fluid px-4">
+        <div id="dashboard" class="mb-5">
+            <div class="row" id="dashboard-row">
+                <div class="col-lg-3" id="sidebar-col">
+                    <div class="card p-3 mb-3">
+                        <div class="section-title">Workflow Summary</div>
+                        <canvas id="statsChart" style="max-height: 110px;"></canvas>
+                        <div id="asm-count-text" class="text-center small fw-bold text-danger mt-2"></div>
+                    </div>
+
+                    <div class="card p-3 mb-3 shadow-sm">
+                        <div class="section-title"><i class="bi bi-info-circle me-2"></i>Quick Guide</div>
+                        <div class="small text-muted mb-2 border-start border-4 border-info ps-2">Optimized for Chrome/Safari.</div>
+                        <div class="small text-muted mb-2 border-start border-4 border-danger ps-2">NOTE: Loading large BAM in IGV may take 5-10 seconds. BAM index (.bai) is mandatory</div>
+                        <ol class="small text-muted ps-3 mb-3">
+                            <li><strong>Filtering</strong>: Use the Search box on the table (right).</li>
+                            <li><strong>Columns</strong>: Use the <strong class="text-primary">Columns</strong> dropdown to hide/show specific fields.</li>
+                            <li><strong>Sort/Move</strong>: Sort via headers or <strong class="text-primary">drag headers</strong> to re-arrange columns.</li>
+                            <li><strong>Pagination</strong>: Adjust rows (10-100) at top-right of table. Scroll down to select the row.</li>
+                            <li><strong>Sample Status</strong>: Status bars show Methylated <strong class="text-primary"> (Blue)</strong> vs Unmethylated <strong class="text-danger"> (Red)</strong> %.</li>
+                        </ol>
+                        <details class="small mt-3 mb-2">
+                            <summary class="fw-bold text-primary uppercase" style="cursor: pointer; font-size: 0.7rem; letter-spacing: 1px;">Data Mapping Reference</summary>
+                            <div class="mt-2 border rounded p-2 bg-white shadow-sm">
+                                <table class="table table-sm table-borderless mb-0" style="font-size: 0.65rem;">
+                                    <thead>
+                                        <tr class="border-bottom">
+                                            <th>Dashboard Field</th>
+                                            <th>CSV Source</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong>expected_category</strong></td><td><code>expected_category</code></td></tr>
+                                        <tr><td><strong>external links</strong></td><td>gnomAD (G) & NCBI (N)</td></tr>
+                                        <tr><td><strong>meth score</strong></td><td><code>mean_combined...</code></td></tr>
+                                        <tr><td><strong>unmeth score</strong></td><td><code>1 - mean_...</code></td></tr>
+                                        <tr><td><strong>QC</strong></td><td><code>report_sum</code> + <code>qc_warn</code></td></tr>
+                                        <tr><td><strong>End Pos</strong></td><td><code>end</code></td></tr>
+                                        <tr><td><strong>Interval</strong></td><td><code>end - start</code></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                        <div class="section-title mt-2 small fw-bold uppercase">Result Interpretation</div>
+                        <ul class="small text-muted ps-3 mb-0" style="font-size: 0.75rem;">
+                            <li><strong class="text-asm">ASM</strong>: Allele-Specific Methylation (as est. by methbat).</li>
+                            <li><strong class="text-primary">G (gnomAD)</strong>: External link to gnomAD v4 Browser.</li>
+                            <li><strong class="text-secondary">N (NCBI)</strong>: External link to NCBI Genome Data Viewer.</li>
+                            <li><strong class="text-success">QC PASS</strong>: both report_summary and qc_warn are 'PASS' (Green).</li>
+                            <li><strong class="text-warning">QC Warning</strong>: either report_summary or qc_warn is not 'PASS' (Orange).</li>
+                            <li><strong class="text-danger">QC Failed</strong>: both report_summary and qc_warn are not 'PASS' (Red).</li>
+                            <li><strong class="text-primary">meth score</strong>: Methylated fraction (as calculated by methbat).</li>
+                            <li><strong class="text-danger">unmeth score</strong>: Unmethylated fraction (1 - meth score).</li>
+                        </ul>
+                    </div>
+
+
+                    <div class="card p-3 mb-3">
+                        <div class="section-title">System Log</div>
+                        <div id="debug-log" class="log-panel">Ready.</div>
+                    </div>
+                </div>
+                <div class="col-lg-9" id="main-col">
+                    <div class="row mb-3 g-3">
+                        <div class="col-md-3">
+                            <div class="card p-2 stat-card shadow-sm h-100">
+                                <div class="text-muted small fw-bold uppercase">Active Sample Context</div>
+                                <div class="h4 mb-0 text-primary" id="stat-cvg">--</div>
+                                <div class="small text-muted" id="stat-cvg-detail">Select a row to begin</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-2 stat-card shadow-sm h-100">
+                                <div class="text-muted small fw-bold uppercase">Sample Status Tally</div>
+                                <div class="h4 mb-0" id="stat-regions">--</div>
+                                <div class="small text-muted">ASM regions detected</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-2 stat-card shadow-sm h-100 overflow-hidden" style="min-height: 140px;">
+                                <div class="text-muted small fw-bold">Distribution</div>
+                                <div style="height: 100px; width: 100%; margin-top: 5px;">
+                                    <canvas id="sampleBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card p-2 stat-card shadow-sm h-100">
+                                <div class="text-muted small fw-bold uppercase">QC Pass Count</div>
+                                <div class="h4 mb-0 text-success" id="stat-qc-pass">0</div>
+                                <div class="small text-muted">Regions passing all QC</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-3 mb-3" id="table-card-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="section-title m-0">Methylation Status (Click Header to Sort)</div>
+                            <div class="d-flex gap-2 align-items-center">
+                                <span class="small text-muted fw-bold d-none d-md-inline">Rows:</span>
+                                <select class="form-select form-select-sm shadow-none" style="width: 75px;" onchange="onPageSizeChanged(this.value)">
+                                    <option value="10">10</option>
+                                    <option value="25" selected>25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-view-list me-1"></i> Columns
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end p-2 shadow-sm" id="column-toggle-list" style="min-width: 200px;">
+                                        <!-- Populated by JS -->
+                                    </ul>
+                                </div>
+                                <button class="btn btn-sm btn-outline-success" onclick="addRow()"><i
+                                        class="bi bi-plus-lg me-1"></i> Add Locus</button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="exportData()"><i
+                                        class="bi bi-download me-1"></i> Export</button>
+                                <button class="btn btn-sm btn-outline-info" id="igv-toggle-btn" onclick="toggleIGV()">
+                                    <i class="bi bi-eye me-1"></i> Launch IGV</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
+                                    <i class="bi bi-arrows-fullscreen me-1"></i> <span id="fs-btn-text">Fullscreen</span>
+                                </button>
+                                <input type="text" id="quick-filter" class="form-control form-control-sm shadow-none"
+                                    style="width: 200px;" placeholder="Search Locus..." oninput="onFilterChanged()">
+                            </div>
+                        </div>
+                        <div id="myGrid" class="ag-theme-alpine"></div>
+                    </div>
+                    <div class="card border-0 shadow-sm overflow-hidden mb-4" id="igv-container-card" style="display: none;">
+                        <div class="bg-white border-bottom shadow-sm">
+                            <details>
+                                <summary class="fw-bold text-primary small uppercase px-3 py-2" style="cursor: pointer; font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    <i class="bi bi-info-circle-fill me-2"></i> How to Load & View Phased Methylation in IGV
+                                </summary>
+                                <div class="p-3 pt-0">
+                                    <div class="row g-3">
+                                        <div class="col-md-7 border-end">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="badge bg-primary-subtle text-primary me-2"><i class="bi bi-cloud-upload"></i> Step 1: Load BAM</span>
+                                                <span class="small fw-bold text-dark">Tracks > Local File... > Select Phased BAM & BAI</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-info-subtle text-info me-2"><i class="bi bi-cursor"></i> Step 2: Navigate</span>
+                                                <span class="small text-muted">Click any table row to copy locus, then paste into IGV search box.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5 ps-md-4">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="badge bg-secondary-subtle text-secondary me-2"><i class="bi bi-palette"></i> Step 3: Color</span>
+                                                <span class="small text-muted">Gear > Color by > base mod 2-color (5mC)</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-dark-subtle text-dark me-2"><i class="bi bi-layers"></i> Step 4: Group</span>
+                                                <span class="small text-muted">Gear > Group by > tag:HP (Separate H1/H2)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                        <div style="height: 750px;">
+                            <iframe id="igv-iframe" src="https://igv.org/app/" style="width: 100%; height: 100%; border: none;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5" style="opacity: 0.15;">
+        
+        <div id="extra-info" class="mb-5">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card p-4 h-100 shadow-sm">
+                        <div class="section-title">Methods and Context</div>
+                        <p class="small text-muted">
+                            This report summarizes hg38 methylation loci identified by the <strong>gsm-nallo</strong> pipeline. 
+                            Methylation is phased using HiPhase and visualized using IGV-Web.
+                        </p>
+                        <div class="mt-3">
+                            <span class="section-title small fw-bold uppercase" style="font-size: 0.7rem;">Required Files</span>
+                            <ul class="small text-muted ps-3 mb-0" style="font-size: 0.75rem;">
+                                 <li><code>*methbat.csv</code> methbat results</li>
+                                <li><code>*haplotagged.bam</code> & <code>.bai</code> (Phased Reads)</li>
+                                <li><code>*combined.bw</code> (Total Methylation Signal)</li>
+                                <li><code>*hap1.bw</code> / <code>*hap2.bw</code> (Allele-Specific Tracks)</li>
+                            </ul>
+                        </div>
+                            <a href="results_260409_hiphase/multiqc/multiqc_report.html#genomic-medicine-sweden-nallo-methods-description"
+                               target="_blank" class="btn btn-outline-primary btn-sm">
+                               <i class="bi bi-file-text me-2"></i>View Methods and Run Details
+                            </a>
+                        </div>
+                    </div>
+                <div class="col-md-6">
+                    <div class="card p-4 h-100 shadow-sm border-0 bg-light">
+                        <div class="section-title">Real-Time Client Diagnostics</div>
+                        <div class="diag-grid">
+                            <div class="diag-card">
+                                <span class="diag-label">Available CPUs</span>
+                                <span class="diag-value" id="rt-cpu">--</span>
+                            </div>
+                            <div class="diag-card">
+                                <span class="diag-label">UI Fluidity (FPS)</span>
+                                <span class="diag-value" id="rt-fps">--</span>
+                            </div>
+                            <div class="diag-card">
+                                <span class="diag-label">JS Heap Usage</span>
+                                <span class="diag-value" id="rt-mem">--</span>
+                                <small class="text-muted d-block mt-1">Current RAM footprint</small>
+                            </div>
+                            <div class="diag-card">
+                                <span class="diag-label">Embedded Data</span>
+                                <span class="diag-value" style="font-size: 1rem;" id="rt-size">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="d-flex justify-content-between align-items-center">
+        <div>Copyright &copy; 2026 <strong>Jyotirmoy Das</strong></div>
+        <div>Bioinformatics Core Facility and Clinical Genomics Link&ouml;ping</div>
+        <div>Report version number: v0.2.3</div>
+    </footer>
+
+    <script>
+        const sampleData = JSON.parse(`{{SAMPLE_DATA_JSON}}`);
+        const sampleStats = {{SAMPLE_STATS_JSON}};
+
+        let gridOptions, jbrowseView, statsChart, fileStore = {};
+
+        function log(msg, type = 'info') {
+            const p = document.getElementById('debug-log');
+            if (p) {
+                p.innerHTML += `\n${new Date().toLocaleTimeString()} ${msg}`;
+                p.scrollTop = p.scrollHeight;
+            }
+        }
+
+        let frameTimes = [], lastFrame = performance.now();
+        function runRealTimeProbes() {
+            const now = performance.now();
+            const delta = now - lastFrame;
+            lastFrame = now;
+            frameTimes.push(1000 / delta);
+            if (frameTimes.length > 60) frameTimes.shift();
+            const avgFPS = Math.round(frameTimes.reduce((a, b) => a + b) / frameTimes.length);
+            document.getElementById('rt-fps').innerText = avgFPS;
+            if (window.performance && performance.memory) {
+                const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+                document.getElementById('rt-mem').innerText = used + ' MB';
+            } else { document.getElementById('rt-mem').innerText = 'N/A'; }
+            requestAnimationFrame(runRealTimeProbes);
+        }
+
+        async function init() {
+            document.getElementById('rt-cpu').innerText = navigator.hardwareConcurrency || '--';
+            document.getElementById('rt-size').innerText = (JSON.stringify(sampleData).length / 1024).toFixed(1) + ' KB';
+            runRealTimeProbes();
+
+            try {
+                const allRows = [];
+                const sampleLabels = Object.keys(sampleData);
+                const asmCountsBySample = sampleLabels.map(sid => {
+                    const count = sampleData[sid].filter(row => row.status_label === 'AlleleSpecificMethylation').length;
+                    return count;
+                });
+                const totalAsm = asmCountsBySample.reduce((a, b) => a + b, 0);
+
+                Object.keys(sampleData).forEach(sid => {
+                    sampleData[sid].forEach(row => {
+                        allRows.push({ ...row, sample: sid });
+                    });
+                });
+
+                document.getElementById('stat-qc-pass').innerText = allRows.filter(r => r.qc_status === 0).length;
+
+                document.getElementById('asm-count-text').innerText = `${totalAsm} total ASM regions across all samples`;
+                document.getElementById('stat-cvg').innerText = 'Combined';
+                document.getElementById('stat-regions').innerText = allRows.length;
+
+                // Project-wide ASM Pie Chart (Sidebar)
+                const statsCtx = document.getElementById('statsChart').getContext('2d');
+                new Chart(statsCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: sampleLabels,
+                        datasets: [{
+                            data: asmCountsBySample,
+                            backgroundColor: ['#2980b9', '#c0392b', '#27ae60', '#f39c12'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (ctx) => ` ${ctx.label}: ${ctx.raw} ASM regions`
+                                }
+                            }
+                        } 
+                    }
+                });
+
+                gridOptions = {
+                    defaultColDef: { sortable: true, resizable: true, filter: true, editable: true, suppressMovable: false },
+                    columnDefs: [
+                        { field: 'sample', headerName: 'Sample', width: 95, pinned: 'left', filter: true, editable: false },
+                        { field: 'cpg_label', headerName: 'cpg_label', pinned: 'left', minWidth: 150 },
+                        { 
+                            field: 'status_label', 
+                            headerName: 'Summary Label', 
+                            cellRenderer: p => {
+                                const val = p.value || 'Uncategorized';
+                                let cls = 'bg-inconclusive';
+                                if (val === 'AlleleSpecificMethylation') cls = 'bg-asm';
+                                else if (val === 'Methylated') cls = 'bg-methyl';
+                                else if (val === 'Unmethylated') cls = 'bg-unmeth';
+                                return `<span class="status-pill ${cls}">${val}</span>`;
+                            }, 
+                            width: 180 
+                        },
+                        { field: 'expected_category', headerName: 'Expected Category', width: 180 },
+                        {
+                            headerName: 'Methylation Vis', cellRenderer: p => {
+                                const combined = parseFloat(p.data.mean_combined_methyl) || 0;
+                                const remaining = 1 - combined;
+                                return `<div class="methyl-bar-wrap" title="Methylated: ${(combined * 100).toFixed(1)}% | Unmethylated: ${(remaining * 100).toFixed(1)}%"><div class="bar-h1" style="width:${combined * 100}%"></div><div class="bar-h2" style="width:${remaining * 100}%"></div></div>`;
+                            }, width: 120, sortable: false, editable: false
+                        },
+                        { field: 'meth_score', headerName: 'meth score', cellRenderer: p => `<span class="fw-bold text-primary">${p.value}</span>`, width: 100 },
+                        { field: 'unmeth_score', headerName: 'unmeth score', cellRenderer: p => `<span class="fw-bold text-danger">${p.value}</span>`, width: 100 },
+                        { field: 'mean_meth_delta', headerName: 'Meth Delta', width: 100 },
+                        { 
+                            field: 'qc_warnings', 
+                            headerName: 'QC', 
+                            cellRenderer: p => {
+                                const status = p.data.qc_status;
+                                let cls = 'bg-danger text-white';
+                                if (status === 0) cls = 'bg-success text-white';
+                                else if (status === 1) cls = 'bg-qc-partial';
+                                return `<span class="status-pill ${cls}" style="font-size:0.65rem">${p.value}</span>`;
+                            }, 
+                            width: 180 
+                        },
+                        { field: 'chrom', headerName: 'Chr', width: 80 },
+                        {
+                            headerName: 'External Links',
+                            width: 130,
+                            editable: false,
+                            cellRenderer: p => {
+                                const start = p.data.start;
+                                const end = p.data.end || start;
+                                const chrom = p.data.chrom;
+                                const chromNum = chrom.replace('chr', '');
+                                
+                                const gnomadUrl = `https://gnomad.broadinstitute.org/region/${chrom}-${start}-${end}?dataset=gnomad_r4`;
+                                const ncbiUrl = `https://www.ncbi.nlm.nih.gov/genome/gdv/browser/genome/?id=GCF_000001405.40&chr=${chromNum}&from=${start}&to=${end}`;
+                                
+                                return `
+                                    <div class="d-flex gap-2">
+                                        <a href="${gnomadUrl}" target="_blank" class="badge bg-primary text-decoration-none" title="View in gnomAD">G</a>
+                                        <a href="${ncbiUrl}" target="_blank" class="badge bg-secondary text-decoration-none" title="View in NCBI GDV">N</a>
+                                    </div>
+                                `;
+                            }
+                        },
+                        { field: 'start', headerName: 'Pos', width: 110, filter: 'agNumberColumnFilter' },
+                        { field: 'end', headerName: 'End Pos', width: 110, filter: 'agNumberColumnFilter' },
+                        { field: 'interval', headerName: 'Interval', width: 100, filter: 'agNumberColumnFilter' },
+                        {
+                            headerName: 'Action',
+                            cellRenderer: p => `<button class="btn btn-sm btn-link text-danger p-0" onclick="deleteRow('${p.node.id}')"><i class="bi bi-trash"></i></button>`,
+                            width: 80,
+                            sortable: false,
+                            filter: false,
+                            editable: false
+                        }
+                    ],
+                    rowData: allRows, 
+                    rowSelection: 'single', 
+                    pagination: true,
+                    paginationPageSize: 25,
+                    onCellValueChanged: (params) => {
+                        log(`✏️ Cell updated: ${params.column.colId} -> ${params.newValue}`);
+                        // Update interval if start/end changed
+                        if (params.column.colId === 'start' || params.column.colId === 'end') {
+                            const start = parseInt(params.data.start) || 0;
+                            const end = parseInt(params.data.end) || 0;
+                            params.data.interval = (end - start).toString();
+                            gridOptions.api.applyTransaction({ update: [params.data] });
+                        }
+                    },
+                    onSelectionChanged: () => {
+                        const row = gridOptions.api.getSelectedRows()[0];
+                        if (row) {
+                            const locus = `${row.chrom}:${parseInt(row.start) - 1000}-${parseInt(row.end || row.start) + 1000}`;
+                            navigator.clipboard.writeText(locus).then(() => {
+                                log(`📋 Locus copied: ${row.cpg_label} (${locus})`);
+                            });
+                            updateLocusStats(row);
+                        }
+                    }
+                };
+                new agGrid.Grid(document.querySelector('#myGrid'), gridOptions);
+                
+                populateColumnToggle();
+
+                // Remove the old donut chart logic from init (we use the per-sample bar chart now)
+                if (allRows.length > 0) updateLocusStats(allRows[0]);
+
+            } catch (e) { log("🛑 Init Error: " + e.message); }
+        }
+
+        let sampleBarChart;
+        function updateLocusStats(row) {
+            const sid = row.sample;
+            const data = sampleData[sid];
+            const stats = sampleStats[sid];
+            
+            const counts = { ASM: 0, Methylated: 0, Unmethylated: 0, Uncat: 0 };
+            data.forEach(d => {
+                const s = d.status_label;
+                if (s === 'AlleleSpecificMethylation') counts.ASM++;
+                else if (s === 'Methylated') counts.Methylated++;
+                else if (s === 'Unmethylated') counts.Unmethylated++;
+                else counts.Uncat++;
+            });
+
+            document.getElementById('stat-cvg').innerText = sid;
+            document.getElementById('stat-cvg-detail').innerText = `Global Coverage: ${stats.cov}`;
+            document.getElementById('stat-regions').innerText = counts.ASM;
+            document.getElementById('stat-qc-pass').innerText = stats.passCount || 0;
+            // Global Avg card removed
+
+            // Update Vertical Bar Chart
+            if (sampleBarChart) sampleBarChart.destroy();
+            const ctx = document.getElementById('sampleBarChart').getContext('2d');
+            sampleBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ASM', 'Methyl.', 'Unmeth.', 'Other'],
+                    datasets: [{
+                        data: [counts.ASM, counts.Methylated, counts.Unmethylated, counts.Uncat],
+                        backgroundColor: ['#e74c3c', '#2ecc71', '#9b59b6', '#95a5a6'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Vertical bars essentially
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        x: { display: false, grid: { display: false } },
+                        y: { grid: { display: false }, ticks: { font: { size: 9 } } }
+                    }
+                }
+            });
+        }
+
+        function onFilterChanged() { gridOptions.api.setQuickFilter(document.getElementById('quick-filter').value); }
+        function onPageSizeChanged(newSize) { gridOptions.api.paginationSetPageSize(Number(newSize)); }
+        function exportData() { gridOptions.api.exportDataAsCsv(); }
+
+        window.onerror = function(msg, url, line) {
+            log(`🛑 Browser Error: ${msg} (at ${line})`);
+            return false;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar-col');
+            const main = document.getElementById('main-col');
+            const btnText = document.getElementById('sidebar-toggle-text');
+            
+            sidebar.classList.toggle('sidebar-hidden');
+            main.classList.toggle('main-full');
+            
+            if (sidebar.classList.contains('sidebar-hidden')) {
+                btnText.innerText = 'Show Sidebar';
+            } else {
+                btnText.innerText = 'Hide Sidebar';
+            }
+            // Notify Ag-Grid to resize
+            if (gridOptions && gridOptions.api) {
+                setTimeout(() => gridOptions.api.sizeColumnsToFit(), 200);
+            }
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('table-card-container');
+            const grid = document.getElementById('myGrid');
+            const btnText = document.getElementById('fs-btn-text');
+            
+            container.classList.toggle('table-container-fullscreen');
+            grid.classList.toggle('fullscreen-grid');
+            
+            if (container.classList.contains('table-container-fullscreen')) {
+                btnText.innerText = 'Exit Fullscreen';
+            } else {
+                btnText.innerText = 'Fullscreen';
+            }
+            
+            // Notify Ag-Grid to resize
+            if (gridOptions && gridOptions.api) {
+                setTimeout(() => gridOptions.api.sizeColumnsToFit(), 200);
+            }
+        }
+
+        function toggleIGV() {
+            const container = document.getElementById('igv-container-card');
+            const btn = document.getElementById('igv-toggle-btn');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btn.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Hide IGV';
+                log("🌐 IGV Viewer launched.");
+            } else {
+                container.style.display = 'none';
+                btn.innerHTML = '<i class="bi bi-eye me-1"></i> Launch IGV';
+                log("🌐 IGV Viewer hidden.");
+            }
+        }
+
+        function populateColumnToggle() {
+            const list = document.getElementById('column-toggle-list');
+            if (!list) return;
+            const cols = gridOptions.columnDefs;
+            list.innerHTML = '';
+            cols.forEach(col => {
+                if (!col.field) return;
+                const li = document.createElement('li');
+                li.className = 'px-2 py-1';
+                li.innerHTML = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${col.field}" id="col-${col.field}" checked onchange="toggleColumn('${col.field}', this.checked)">
+                        <label class="form-check-label small" for="col-${col.field}">${col.headerName || col.field}</label>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function toggleColumn(field, visible) {
+            gridOptions.columnApi.setColumnVisible(field, visible);
+            // Re-size columns to fit if needed
+            setTimeout(() => gridOptions.api.sizeColumnsToFit(), 100);
+        }
+
+        function addRow() {
+            const sid = Object.keys(sampleData)[0] || 'Unknown';
+            const newItem = {
+                sample: sid,
+                cpg_label: 'New Locus',
+                status_label: 'Uncategorized',
+                expected_category: 'Uncategorized',
+                meth_score: '0.0',
+                unmeth_score: '1.0',
+                mean_meth_delta: '0.0',
+                qc_warnings: 'MANUAL',
+                qc_status: 0,
+                chrom: 'chr1',
+                start: '0',
+                end: '0',
+                interval: '0',
+                mean_combined_methyl: '0.0',
+                mean_hap1_methyl: '0.0',
+                mean_hap2_methyl: '0.0'
+            };
+            gridOptions.api.applyTransaction({ add: [newItem], addIndex: 0 });
+            log("➕ New row added to the top.");
+        }
+
+        function deleteRow(nodeId) {
+            const rowNode = gridOptions.api.getRowNode(nodeId);
+            if (rowNode && confirm('Are you sure you want to delete this row?')) {
+                gridOptions.api.applyTransaction({ remove: [rowNode.data] });
+                log(`🗑️ Row deleted: ${rowNode.data.cpg_label}`);
+            }
+        }
+
+        async function syncTracks() {}
+        window.onload = init;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
