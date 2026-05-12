@@ -91,20 +91,19 @@ nextflow run genomic-medicine-sweden/nallo \
 However, to run most parts of the pipeline you will need to supply additional reference files. For more details and further functionality, please refer to the [documentation](http://genomic-medicine-sweden.github.io/nallo/).
 
 
-???+ note "methylation dashboard"
-     PacBio methylation data analysis with `methbat report` using `gms-nallo` pipeline, can be easily run for better visualization using [gms-nallo-methylation-dashboard](https://github.com/JD2112/gms-nallo-methylation-dashboard) tool.
+> [!note]
+> PacBio methylation data analysis with `methbat report` using `gms-nallo` pipeline, can be easily run for better visualization using [gms-nallo-methylation-dashboard](https://github.com/JD2112/gms-nallo-methylation-dashboard) tool.
 
-     After successful run of `gms-nallo` pipeline, you can use - 
-     
-     ```bash
-     python3 scripts/nallo_methylation_manager.py \
-        --results <PATH/TO/GMS-nallo results> \
-        --template ./templates/dashboard-template.html \
-        --output ./results/reports/
-     ```
+> After successful run of `gms-nallo` pipeline, you can use:
 
-     For more details, please refer to the [gms-nallo-methylation-dashboard](https://github.com/JD2112/gms-nallo-methylation-dashboard) on how to use it.
+> ```bash
+> python3 scripts/nallo_methylation_manager.py \
+>     --results <PATH/TO/GMS-nallo results> \
+>     --template ./templates/dashboard-template.html \
+>     --output ./results/reports/
+> ```
 
+> For more details, please refer to the [gms-nallo-methylation-dashboard](https://github.com/JD2112/gms-nallo-methylation-dashboard) on how to use it.
 
 ## Credits
 
