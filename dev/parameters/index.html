@@ -880,22 +880,6 @@
 <td></td>
 </tr>
 <tr>
-<td><code>variant_consequences_snvs</code></td>
-<td>File containing list of SO terms listed in the order of severity from most severe to lease severe for annotating genomic SNVs. For more information check https://ensembl.org/info/genome/variation/prediction/predicted_data.html</td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>variant_consequences_svs</code></td>
-<td>File containing list of SO terms listed in the order of severity from most severe to lease severe for annotating genomic SVs. For more information check https://ensembl.org/info/genome/variation/prediction/predicted_data.html</td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
 <td><code>vep_cache</code></td>
 <td>A path to the VEP cache location</td>
 <td><code>string</code></td>
@@ -1312,14 +1296,6 @@
 <td>True</td>
 </tr>
 <tr>
-<td><code>hook_url</code></td>
-<td>Incoming hook URL for messaging service <details><summary>Help</summary><small>Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.</small></details></td>
-<td><code>string</code></td>
-<td></td>
-<td></td>
-<td>True</td>
-</tr>
-<tr>
 <td><code>multiqc_config</code></td>
 <td>Custom config file to supply to MultiQC.</td>
 <td><code>string</code></td>
@@ -1355,7 +1331,7 @@
 <td><code>pipelines_testdata_base_path</code></td>
 <td>Base URL or local path to location of pipeline test dataset files</td>
 <td><code>string</code></td>
-<td>https://raw.githubusercontent.com/genomic-medicine-sweden/test-datasets/59c411038dac1e4dab2d745c80d382f047433539/</td>
+<td>https://raw.githubusercontent.com/genomic-medicine-sweden/test-datasets/8fff73a86ec5c9360ed8da35aac5b108b9c9ef78/</td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1500,6 +1476,14 @@
 <td>Which phasing software to use (<code>longphase</code>, <code>whatshap</code>, <code>hiphase</code>) (accepted: <code>longphase</code>|<code>whatshap</code>|<code>hiphase</code>)</td>
 <td><code>string</code></td>
 <td>longphase</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>whatshap_pedigree_phasing</code></td>
+<td>Enable/disable pedigree phasing when phasing with whatshap</td>
+<td><code>boolean</code></td>
+<td>True</td>
 <td></td>
 <td></td>
 </tr>
