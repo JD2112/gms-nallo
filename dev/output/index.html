@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -1241,7 +1241,7 @@
 <h2 id="introduction">Introduction</h2>
 <p>This document describes the pipeline output files and the tools used to generate them.</p>
 <h2 id="aligned-reads">Aligned reads</h2>
-<p><a href="https://github.com/lh3/minimap2">Minimap2</a> is used to map the reads to a reference genome. The aligned reads are sorted, merged and indexed using <a href="https://github.com/samtools/samtools">samtools</a>. If the pipeline is run with phasing, the aligned reads will be haplotagged using the active phasing tool.</p>
+<p><a href="https://github.com/lh3/minimap2">Minimap2</a> is used to map the reads to a reference genome. The aligned reads are sorted, merged and indexed using <a href="https://github.com/samtools/samtools">samtools</a>. A sample with a single pre-aligned BAM (<code>aligned_bam</code>) is indexed, not merged. If the pipeline is run with phasing, the aligned reads will be haplotagged using the active phasing tool.</p>
 <table>
 <thead>
 <tr>
@@ -1554,13 +1554,19 @@
 </tr>
 <tr>
 <td><code>qc/mosdepth/{sample}/{sample}.regions.bed.gz</code></td>
-<td>Depth per region</td>
+<td>Mean depth per target region</td>
 <td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
 <td></td>
 </tr>
 <tr>
 <td><code>qc/mosdepth/{sample}/{sample}.regions.bed.gz.csi</code></td>
 <td>Index of the regions.bed.gz file</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td></td>
+</tr>
+<tr>
+<td><code>qc/mosdepth/{sample}/{sample}.thresholds.bed.gz</code></td>
+<td>Bases covered at ≥20X and ≥30X per target region</td>
 <td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
 <td></td>
 </tr>
@@ -1895,6 +1901,20 @@
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td><code>snvs/family/{family}/{family}_snvs_unphased.vcf.gz</code></td>
+<td>Pre-phasing joint family SNV VCF (vcf entry point input)</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+</tr>
+<tr>
+<td><code>snvs/family/{family}/{family}_snvs_unphased.vcf.gz.tbi</code></td>
+<td>Index of the pre-phasing SNV VCF</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+</tr>
 </tbody>
 </table>
 <h4 id="annotation">Annotation</h4>
@@ -1956,7 +1976,7 @@
 </tbody>
 </table>
 <h4 id="filtering">Filtering</h4>
-<p><a href="https://www.ensembl.org/vep">Filter_vep</a> and <a href="https://samtools.github.io/bcftools/bcftools.html">bcftools</a> can be used to filter variants after annotation. These will be output if either of <code>--filter_variants_hgnc_id</code> and <code>--filter_snvs_expression</code> has been used, and only family VCFs are filtered.</p>
+<p><a href="https://www.ensembl.org/vep">Filter_vep</a> and <a href="https://samtools.github.io/bcftools/bcftools.html">bcftools</a> can be used to filter variants after annotation. These will be output if any of <code>--filter_variants_hgnc_ids</code>, <code>--filter_bcftools_snvs_expression</code>, or <code>--filter_vep_snvs_expression</code> has been used, and only family VCFs are filtered.</p>
 <table>
 <thead>
 <tr>
@@ -2007,7 +2027,7 @@
 </tbody>
 </table>
 <h3 id="svs-and-cnvs">SVs (and CNVs)</h3>
-<p><a href="https://github.com/KolmogorovLab/Severus">Severus</a> or <a href="https://github.com/fritzsedlazeck/Sniffles">Sniffles</a> are used to call structural variants, while <a href="https://github.com/PacificBiosciences/HiFiCNV">HiFiCNV</a> is used to call CNVs. HiFiCNV also produces copy number, depth, and MAF <a href="#visualization-tracks">visualization tracks</a>. <a href="https://github.com/PacificBiosciences/sawfish">Sawfish</a> calls both SVs and CNVs by default.</p>
+<p><a href="https://github.com/KolmogorovLab/Severus">Severus</a>, <a href="https://github.com/fritzsedlazeck/Sniffles">Sniffles</a> (v2 or v1) or <a href="https://github.com/Maggi-Chen/DeBreak">DeBreak</a> are used to call structural variants, while <a href="https://github.com/PacificBiosciences/HiFiCNV">HiFiCNV</a> is used to call CNVs. HiFiCNV also produces copy number, depth, and MAF <a href="#visualization-tracks">visualization tracks</a>. <a href="https://github.com/PacificBiosciences/sawfish">Sawfish</a> calls both SVs and CNVs by default.</p>
 <div class="admonition tip">
 <p class="admonition-title">Family-level VCFs per caller</p>
 <p>Unannotated family-level VCFs per caller can be output with --publish_unannotated_family_svs.</p>
@@ -2023,13 +2043,13 @@
 </thead>
 <tbody>
 <tr>
-<td><code>svs/family/{family_id}/{family_id}_{hificnv,sawfish,severus,sniffles}_svs.vcf.gz</code></td>
+<td><code>svs/family/{family_id}/{family_id}_{debreak,hificnv,sawfish,severus,sniffles,sniffles1}_svs.vcf.gz</code></td>
 <td>VCF file with merged SVs/CNVs by family and caller</td>
 <td></td>
 <td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
 </tr>
 <tr>
-<td><code>svs/family/{family_id}/{family_id}_{hificnv,sawfish,severus,sniffles}_svs.vcf.gz.tbi</code></td>
+<td><code>svs/family/{family_id}/{family_id}_{debreak,hificnv,sawfish,severus,sniffles,sniffles1}_svs.vcf.gz.tbi</code></td>
 <td>Index of the merged VCF file</td>
 <td></td>
 <td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
@@ -2043,6 +2063,18 @@
 <tr>
 <td><code>svs/family/{family_id}/{family_id}_svs.vcf.gz.tbi</code></td>
 <td>Index of the merged VCF file</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svs/family/{family_id}/{family_id}_svs_unphased.vcf.gz</code></td>
+<td>Pre-phasing SVDB-merged family SV VCF (vcf entry point input)</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svs/family/{family_id}/{family_id}_svs_unphased.vcf.gz.tbi</code></td>
+<td>Index of the pre-phasing SV VCF</td>
 <td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /></td>
 <td></td>
 </tr>
@@ -2089,7 +2121,7 @@
 </tbody>
 </table>
 <h4 id="filtering_1">Filtering</h4>
-<p><a href="https://www.ensembl.org/vep">Filter_vep</a> and <a href="https://samtools.github.io/bcftools/bcftools.html">bcftools</a> can be used to filter variants after annotation. These will be output if either of <code>--filter_variants_hgnc_id</code> and <code>--filter_svs_expression</code> has been used, and only family VCFs are filtered.</p>
+<p><a href="https://www.ensembl.org/vep">Filter_vep</a> and <a href="https://samtools.github.io/bcftools/bcftools.html">bcftools</a> can be used to filter variants after annotation. These will be output if any of <code>--filter_variants_hgnc_ids</code>, <code>--filter_bcftools_svs_expression</code>, or <code>--filter_vep_svs_expression</code> has been used, and only family VCFs are filtered.</p>
 <table>
 <thead>
 <tr>
@@ -2292,10 +2324,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

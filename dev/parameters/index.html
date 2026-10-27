@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -760,8 +760,24 @@
 <td></td>
 </tr>
 <tr>
+<td><code>skip_mitochondrial_calling</code></td>
+<td>Skip mitochondrial variant calling</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>skip_sex_check</code></td>
 <td>Skip sex check</td>
+<td><code>boolean</code></td>
+<td>False</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>skip_portello</code></td>
+<td>Skip Portello analysis</td>
 <td><code>boolean</code></td>
 <td>False</td>
 <td></td>
@@ -880,6 +896,22 @@
 <td></td>
 </tr>
 <tr>
+<td><code>variant_consequences_snvs</code></td>
+<td>File containing list of SO terms listed in the order of severity from most severe to lease severe for annotating genomic SNVs. For more information check https://ensembl.org/info/genome/variation/prediction/predicted_data.html</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>variant_consequences_svs</code></td>
+<td>File containing list of SO terms listed in the order of severity from most severe to lease severe for annotating genomic SVs. For more information check https://ensembl.org/info/genome/variation/prediction/predicted_data.html</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>vep_cache</code></td>
 <td>A path to the VEP cache location</td>
 <td><code>string</code></td>
@@ -898,6 +930,14 @@
 <tr>
 <td><code>methbat_regions</code></td>
 <td>A tsv file with only regions of interest (example here: https://github.com/PacificBiosciences/MethBat/blob/main/data/cpgIslandExt.sorted.hg38.tsv) or with both regions and background cohort values (example here: https://github.com/PacificBiosciences/MethBat/blob/main/data/meth_profile_model.tsv), made with methbat build</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>cramino_regions</code></td>
+<td>A BED file used to filter reads to on-target regions before cramino QC. By default this is the same as <code>target_regions</code>.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -993,7 +1033,15 @@
 </tr>
 <tr>
 <td><code>genmod_score_config_snvs</code></td>
-<td>A SNV rank model config file for genmod.</td>
+<td>A rank model config file for genmod, used for nuclear SNV scoring.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>genmod_score_config_snvs_mito</code></td>
+<td>A rank model config file for genmod, used for mitochondrial SNV scoring. Should reference only fields produced by the MT VEP command.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1097,7 +1145,7 @@
 </tr>
 <tr>
 <td><code>create_maf_track</code></td>
-<td>Whether to create a MAF track from SNV calls when calling SVs with HiFiCNV or Sawfish. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Defaults to <code>true</code></td>
+<td>Whether to create a MAF track from SNV calls when calling SVs with HiFiCNV or Sawfish. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Set to <code>false</code> to run HiFiCNV or Sawfish with <code>--skip_snv_calling</code>. Defaults to <code>true</code></td>
 <td><code>boolean</code></td>
 <td>True</td>
 <td></td>
@@ -1105,7 +1153,7 @@
 </tr>
 <tr>
 <td><code>create_hificnv_maf_track</code></td>
-<td>Whether to create a MAF track from SNV calls when calling CNVs with HiFiCNV. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Defaults to <code>create_maf_track</code></td>
+<td>Whether to create a MAF track from SNV calls when calling CNVs with HiFiCNV. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Set to <code>false</code> to run HiFiCNV with <code>--skip_snv_calling</code>. Defaults to <code>create_maf_track</code></td>
 <td><code>boolean</code></td>
 <td>True</td>
 <td></td>
@@ -1113,7 +1161,7 @@
 </tr>
 <tr>
 <td><code>create_sawfish_maf_track</code></td>
-<td>Whether to create a MAF track from SNV calls when calling SVs with Sawfish. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Defaults to <code>create_maf_track</code></td>
+<td>Whether to create a MAF track from SNV calls when calling SVs with Sawfish. Requires SNV calling to finish before calling SVs, so deactivating this can speed up the pipeline. Set to <code>false</code> to run Sawfish with <code>--skip_snv_calling</code>. Defaults to <code>create_maf_track</code></td>
 <td><code>boolean</code></td>
 <td>True</td>
 <td></td>
@@ -1231,6 +1279,14 @@
 <td></td>
 <td>True</td>
 </tr>
+<tr>
+<td><code>publish_input_aligned_bams</code></td>
+<td>Publish the aligned BAMs provided in the samplesheet (aligned_bam) as aligned reads, even if the pipeline has not changed them.</td>
+<td><code>boolean</code></td>
+<td></td>
+<td></td>
+<td>True</td>
+</tr>
 </tbody>
 </table>
 <h2 id="generic-options">Generic options</h2>
@@ -1331,7 +1387,7 @@
 <td><code>pipelines_testdata_base_path</code></td>
 <td>Base URL or local path to location of pipeline test dataset files</td>
 <td><code>string</code></td>
-<td>https://raw.githubusercontent.com/genomic-medicine-sweden/test-datasets/8fff73a86ec5c9360ed8da35aac5b108b9c9ef78/</td>
+<td>https://raw.githubusercontent.com/genomic-medicine-sweden/test-datasets/8cf6216b9cbf96f6bcfc918610182708e3796ad9/</td>
 <td></td>
 <td>True</td>
 </tr>
@@ -1401,7 +1457,7 @@
 </tr>
 <tr>
 <td><code>preset</code></td>
-<td>Enable or disable certain parts of the pipeline by default, depending on data type (<code>revio</code>, <code>pacbio</code>, <code>ONT_R10</code>) (accepted: <code>revio</code>|<code>pacbio</code>|<code>ONT_R10</code>)</td>
+<td>Enable or disable certain parts of the pipeline by default, depending on data type (<code>revio</code>, <code>pacbio</code>, <code>ONT_R10</code>, <code>ONT_R10_AS</code>) (accepted: <code>revio</code>|<code>pacbio</code>|<code>ONT_R10</code>|<code>ONT_R10_AS</code>)</td>
 <td><code>string</code></td>
 <td>revio</td>
 <td>True</td>
@@ -1504,18 +1560,10 @@
 <td></td>
 </tr>
 <tr>
-<td><code>run_methbat</code></td>
-<td>Run methbat for methylation analysis, set to <code>true</code> by default when <code>--preset revio</code> is active.</td>
-<td><code>boolean</code></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>run_modkit</code></td>
-<td>Run modkit for methylation analysis, set to <code>true</code> by default when <code>--preset ONT_R10</code> is active.</td>
-<td><code>boolean</code></td>
-<td></td>
+<td><code>methylation_callers</code></td>
+<td>Which methylation callers to use. Several callers can be specified, separated by commas (e.g. methbat,modkit). Defaults to <code>methbat</code> when <code>--preset revio</code> is active and <code>modkit</code> when <code>--preset ONT_R10</code> is active.</td>
+<td><code>string</code></td>
+<td>methbat</td>
 <td></td>
 <td></td>
 </tr>
@@ -1545,9 +1593,153 @@
 </tr>
 <tr>
 <td><code>mitochondrial_caller</code></td>
-<td>Which mitochondrial caller to use for mitochondrial variant calling (<code>deepvariant</code>)</td>
+<td>Which mitochondrial caller to use for mitochondrial variant calling</td>
 <td><code>string</code></td>
-<td>deepvariant</td>
+<td>mitorsaw</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mitorsaw_minimum_maf</code></td>
+<td>Minimum minor allele frequency (MAF) for mitorsaw variant calling.</td>
+<td><code>number</code></td>
+<td>0.1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mitorsaw_minimum_read_count</code></td>
+<td>Minimum read count to consider a heteroplasmic variant.</td>
+<td><code>integer</code></td>
+<td>3</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mitochondrial_sv_min_size</code></td>
+<td>Minimum allele length difference (abs(strlen(REF)-strlen(ALT))) to classify a mitochondrial variant as an SV rather than a SNV/small indel.</td>
+<td><code>integer</code></td>
+<td>50</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_overlap</code></td>
+<td>Minimum reciprocal overlap (<code>svdb --overlap</code>) for deletions and duplications when merging the SVs of one caller across the samples of a family.</td>
+<td><code>number</code></td>
+<td>0.5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_bnd_distance</code></td>
+<td>Maximum distance in bp between breakpoints (<code>svdb --bnd_distance</code>) of translocations and inversions when merging the SVs of one caller across the samples of a family.</td>
+<td><code>integer</code></td>
+<td>1000</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_ins_distance</code></td>
+<td>Maximum distance in bp between insertion positions (<code>svdb --ins_distance</code>) when merging the SVs of one caller across the samples of a family.</td>
+<td><code>integer</code></td>
+<td>100</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_ins_svlen_ratio</code></td>
+<td>Minimum ratio of the smaller to the larger insertion length (<code>svdb --ins_svlen_ratio</code>) when merging the SVs of one caller across the samples of a family.</td>
+<td><code>number</code></td>
+<td>0.5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_ins_seq_similarity</code></td>
+<td>Minimum sequence similarity of insertions (<code>svdb --ins_seq_similarity</code>) when merging the SVs of one caller across the samples of a family; 0 disables the sequence comparison.</td>
+<td><code>number</code></td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_family_overlap</code></td>
+<td>Minimum reciprocal overlap (<code>svdb --overlap</code>) for deletions and duplications when merging the SVs of different callers into one family VCF.</td>
+<td><code>number</code></td>
+<td>0.7</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_family_bnd_distance</code></td>
+<td>Maximum distance in bp between breakpoints (<code>svdb --bnd_distance</code>) of translocations and inversions when merging the SVs of different callers into one family VCF.</td>
+<td><code>integer</code></td>
+<td>2000</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_family_ins_distance</code></td>
+<td>Maximum distance in bp between insertion positions (<code>svdb --ins_distance</code>) when merging the SVs of different callers into one family VCF.</td>
+<td><code>integer</code></td>
+<td>100</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_family_ins_svlen_ratio</code></td>
+<td>Minimum ratio of the smaller to the larger insertion length (<code>svdb --ins_svlen_ratio</code>) when merging the SVs of different callers into one family VCF.</td>
+<td><code>number</code></td>
+<td>0.5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_family_ins_seq_similarity</code></td>
+<td>Minimum sequence similarity of insertions (<code>svdb --ins_seq_similarity</code>) when merging the SVs of different callers into one family VCF; 0 disables the sequence comparison.</td>
+<td><code>number</code></td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_query_overlap</code></td>
+<td>Minimum reciprocal overlap (<code>svdb --overlap</code>) for deletions and duplications when annotating SVs against the databases in <code>--svdb_sv_databases</code>.</td>
+<td><code>number</code></td>
+<td>0.7</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_query_bnd_distance</code></td>
+<td>Maximum distance in bp between breakpoints (<code>svdb --bnd_distance</code>) of translocations and inversions when annotating SVs against the databases in <code>--svdb_sv_databases</code>.</td>
+<td><code>integer</code></td>
+<td>1000</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_query_ins_distance</code></td>
+<td>Maximum distance in bp between insertion positions (<code>svdb --ins_distance</code>) when annotating SVs against the databases in <code>--svdb_sv_databases</code>.</td>
+<td><code>integer</code></td>
+<td>100</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_query_ins_svlen_ratio</code></td>
+<td>Minimum ratio of the smaller to the larger insertion length (<code>svdb --ins_svlen_ratio</code>) when annotating SVs against the databases in <code>--svdb_sv_databases</code>.</td>
+<td><code>number</code></td>
+<td>0.5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>svdb_query_ins_seq_similarity</code></td>
+<td>Minimum sequence similarity of insertions (<code>svdb --ins_seq_similarity</code>) when annotating SVs against the databases in <code>--svdb_sv_databases</code>; 0 disables the sequence comparison.</td>
+<td><code>number</code></td>
+<td>0</td>
 <td></td>
 <td></td>
 </tr>
@@ -1571,7 +1763,7 @@
 <td><code>vep_cache_version</code></td>
 <td>VEP cache version</td>
 <td><code>integer</code></td>
-<td>110</td>
+<td>116</td>
 <td></td>
 <td></td>
 </tr>
@@ -1593,7 +1785,7 @@
 </tr>
 <tr>
 <td><code>vep_plugin_files</code></td>
-<td>Path to a CSV/TSV/JSON/YAML file with vep_files as header, and then paths to vep plugin files. Paths to pLI_values.txt and LoFtool_scores.txt are required.</td>
+<td>Path to a CSV/TSV/JSON/YAML file with vep_files as header, and then paths to vep plugin files. Paths to pLI_values.txt and LoFtool_scores.txt are required for SNV annotation; only pLI_values.txt is required for SV annotation.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1616,18 +1808,34 @@
 <td></td>
 </tr>
 <tr>
-<td><code>filter_snvs_expression</code></td>
-<td>An expression that is passed to bcftools view to filter SNVs, e.g. --filter_snvs_expression "-e 'INFO/AQ&gt;60'"</td>
+<td><code>filter_bcftools_snvs_expression</code></td>
+<td>An expression that is passed to bcftools view to filter SNVs, e.g. --filter_bcftools_snvs_expression "-e 'INFO/AQ&gt;60'"</td>
 <td><code>string</code></td>
 <td>None</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td><code>filter_svs_expression</code></td>
-<td>An expression that is passed to bcftools view to filter SVs, e.g. --filter_svs_expression "-e 'INFO/AQ&gt;60'"</td>
+<td><code>filter_bcftools_svs_expression</code></td>
+<td>An expression that is passed to bcftools view to filter SVs, e.g. --filter_bcftools_svs_expression "-e 'INFO/AQ&gt;60'"</td>
 <td><code>string</code></td>
 <td>None</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>filter_vep_snvs_expression</code></td>
+<td>An expression passed to filter_vep to filter SNVs, e.g. --filter_vep_snvs_expression "IMPACT is HIGH". Combined with the HGNC ID restriction using AND when filter_variants_hgnc_ids is supplied. Do not include --filter.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>filter_vep_svs_expression</code></td>
+<td>An expression passed to filter_vep to filter SVs, e.g. --filter_vep_svs_expression "IMPACT is HIGH". Combined with the HGNC ID restriction using AND when filter_variants_hgnc_ids is supplied. Do not include --filter.</td>
+<td><code>string</code></td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
@@ -1688,12 +1896,28 @@
 <td>True</td>
 </tr>
 <tr>
-<td><code>extra_vep_options</code></td>
-<td>Extra options to VEP, used for test profile.</td>
+<td><code>extra_vep_options_snv</code></td>
+<td>Options appended to the VEP core command for nuclear SNV annotation. The default enables standard enrichment annotations. To add plugins such as CADD or SpliceAI, supply the default flags plus your additions. Plugin files must be included in <code>vep_plugin_files</code>.</td>
 <td><code>string</code></td>
+<td>--buffer_size 20000 --appris --biotype --canonical --ccds --domains --exclude_predicted --force_overwrite --hgvs --humdiv --no_progress --numbers --polyphen p --protein --regulatory --sift p --symbol --tsl --uniprot --no_stats</td>
 <td></td>
 <td></td>
-<td>True</td>
+</tr>
+<tr>
+<td><code>extra_vep_options_snv_mito</code></td>
+<td>Options appended to the VEP core command for mitochondrial SNV annotation. Nuclear-specific flags (--sift, --polyphen, --humdiv) are excluded. To add MT-specific plugins such as gnomADMt, supply the default flags plus your additions. Plugin files must be included in <code>vep_plugin_files</code>.</td>
+<td><code>string</code></td>
+<td>--appris --biotype --buffer_size 20000 --canonical --ccds --domains --exclude_predicted --force_overwrite --hgvs --no_progress --numbers --protein --regulatory --symbol --tsl --uniprot --no_stats</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>extra_vep_options_sv</code></td>
+<td>Options appended to the VEP core command for SV annotation. The default enables standard enrichment annotations. To add plugins, supply the default flags plus your additions. Plugin files must be included in <code>vep_plugin_files</code>.</td>
+<td><code>string</code></td>
+<td>--appris --biotype --buffer_size 100 --canonical --ccds --domains --exclude_predicted --force_overwrite --hgvs --no_progress --numbers --protein --regulatory --symbol --tsl --uniprot --no_stats</td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>extra_yak_options</code></td>
@@ -1865,7 +2089,23 @@
 </tr>
 <tr>
 <td><code>sentieon_model_bundle</code></td>
-<td>The location of the DNAscope model bundle. Model bundle files can be found in the sentieon-models Github repository.</td>
+<td>The location of the DNAscope model bundle. Model bundle files can be found in the sentieon-models Github repository. Some model bundles require a matching population VCF.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_population_vcf</code></td>
+<td>Population VCF containing annotations for DNAModelApply. Required for some DNAscope model bundles; the population VCF must match --sentieon_model_bundle.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sentieon_population_tbi</code></td>
+<td>Tabix index for --sentieon_population_vcf. Provide the matching .tbi file alongside the population VCF.</td>
 <td><code>string</code></td>
 <td></td>
 <td></td>
@@ -1944,14 +2184,6 @@
 <td></td>
 </tr>
 <tr>
-<td><code>sniffles_min_heterozygous_allele_frequency</code></td>
-<td>Threshold on heterozygous allele frequency in Sniffles (0-1).</td>
-<td><code>number</code></td>
-<td>0</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
 <td><code>sniffles_min_sv_size</code></td>
 <td>Minimum length of SV to be reported in Sniffles.</td>
 <td><code>number</code></td>
@@ -1960,10 +2192,66 @@
 <td></td>
 </tr>
 <tr>
+<td><code>sniffles_min_heterozygous_allele_frequency</code></td>
+<td>Threshold on heterozygous allele frequency in Sniffles v1 (<code>--sv_callers sniffles1</code>). Has no effect when using Sniffles v2.</td>
+<td><code>number</code></td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>sawfish_min_sv_size</code></td>
 <td>Co-linear SVs must have either an insertion or deletion of this size or greater to be included in the output in Sawfish. All other SV evidence patterns such as those consistent with duplications, inversions and translocations will always be included in the output.</td>
 <td><code>number</code></td>
 <td>50</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>read_aligner</code></td>
+<td>Which aligner to use for read alignment. Supported arguments are mm2plus, minimap2 or pbmm2. (accepted: <code>minimap2</code>|<code>pbmm2</code>|<code>mm2plus</code>)</td>
+<td><code>string</code></td>
+<td>pbmm2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>pbmm2_preset</code></td>
+<td>Preset to use for pbmm2. Supported arguments are HIFI, CCS, or SUBREAD. (accepted: <code>HIFI</code>|<code>CCS</code>|<code>SUBREAD</code>)</td>
+<td><code>string</code></td>
+<td>CCS</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>glnexus_config</code></td>
+<td>Glnexus config to use for merging gVCFs. If no file is provided, the default config <code>assets/glnexus_config_dp1.yml</code> will be used.</td>
+<td><code>string</code></td>
+<td>None</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>assembly_aligner</code></td>
+<td>Which aligner to use for assembly alignment. Supported arguments are mm2plus or minimap2. (accepted: <code>mm2plus</code>|<code>minimap2</code>)</td>
+<td><code>string</code></td>
+<td>minimap2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>methbat_map</code></td>
+<td>Mapping file that can be used to filter and annotate the methbat output based on regions.</td>
+<td><code>string</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>paraphase_config</code></td>
+<td>Configuration file for Paraphase.</td>
+<td><code>string</code></td>
+<td>None</td>
 <td></td>
 <td></td>
 </tr>
@@ -2048,10 +2336,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

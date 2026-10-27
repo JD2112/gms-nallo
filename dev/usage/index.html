@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -416,6 +416,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#presets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -531,6 +542,17 @@
     <span class="md-ellipsis">
       
         Call SVs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-mitochondrial-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call mitochondrial variants
       
     </span>
   </a>
@@ -1024,6 +1046,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#presets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1139,6 +1172,17 @@
     <span class="md-ellipsis">
       
         Call SVs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-mitochondrial-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call mitochondrial variants
       
     </span>
   </a>
@@ -1546,14 +1590,16 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 </ol>
 <h3 id="samplesheet">Samplesheet</h3>
 <p>First, you will need to create a samplesheet with information about the samples you would like to analyze before running the pipeline. Use this parameter to specify its location.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>--input<span class="w"> </span><span class="s1">&#39;[path to samplesheet file]&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>--input<span class="w"> </span><span class="s1">'[path to samplesheet file]'</span>
 </span></code></pre></div>
-<p>It has to be a comma-separated file with seven columns and a header row, as shown in the example below:</p>
+<p>It has to be a comma-separated file with eight required columns and a header row, as shown in the example below:</p>
 <div class="language-console highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="go">project,sample,file,family_id,paternal_id,maternal_id,sex,phenotype</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">testrun,HG002,/path/to/HG002_1.bam,NIST,HG003,0,1,2</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="go">testrun,HG002,/path/to/HG002_2.bam,NIST,HG003,0,1,2</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="go">testrun,HG003,/path/to/HG003.fastq.gz,NIST,0,0,2,1</span>
 </span></code></pre></div>
+<p>Three additional columns - <code>aligned_bam</code>, <code>snv_vcf</code>, <code>sv_vcf</code> - are required when skipping alignment or variant calling (see <a href="#entry-points">Entry points</a> below). They can be omitted entirely for FASTQ and uBAM runs.</p>
+<p><strong>Required columns</strong></p>
 <table>
 <thead>
 <tr>
@@ -1572,7 +1618,7 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 </tr>
 <tr>
 <td><code>file</code></td>
-<td>Absolute path to a BAM or gzipped FASTQ file. File has to have the extension ".fastq.gz", .fq.gz" or ".bam".</td>
+<td>Absolute path to an unaligned BAM or gzipped FASTQ file. File has to have the extension ".fastq.gz", ".fq.gz" or ".bam". Set to <code>0</code> when providing a pre-aligned BAM via the <code>aligned_bam</code> column.</td>
 </tr>
 <tr>
 <td><code>family_id</code></td>
@@ -1596,18 +1642,107 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 </tr>
 </tbody>
 </table>
+<p><strong>Optional columns</strong> (required for <code>bam</code> and <code>vcf</code> entry points; omit or set to <code>0</code> otherwise)</p>
+<table>
+<thead>
+<tr>
+<th>Fields</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aligned_bam</code></td>
+<td>Absolute path to a pre-aligned BAM file. Required for <code>bam</code> and <code>vcf</code> entry points. Set <code>file</code> to <code>0</code> when this is provided. A sample with a single BAM is indexed and used as is, samples with several BAMs are merged.</td>
+</tr>
+<tr>
+<td><code>snv_vcf</code></td>
+<td>Absolute path to a pre-called SNV VCF (<code>.vcf.gz</code>). Must be paired with <code>sv_vcf</code> and <code>aligned_bam</code>.</td>
+</tr>
+<tr>
+<td><code>sv_vcf</code></td>
+<td>Absolute path to a pre-called SV VCF (<code>.vcf.gz</code>). Must be paired with <code>snv_vcf</code> and <code>aligned_bam</code>.</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition tip">
 <p class="admonition-title">Multiple files per sample</p>
 <p>If you have multiple files per sample, they can be added on separate rows. Keep all columns except <code>file</code> identical for each sample. The files will be merged after alignment or before assembly.</p>
 </div>
+<h3 id="entry-points">Entry points</h3>
+<p>The pipeline automatically detects the entry point for each sample from the samplesheet columns. All samples in the same family must share the same entry point.</p>
+<table>
+<thead>
+<tr>
+<th><code>file</code></th>
+<th><code>aligned_bam</code></th>
+<th><code>snv_vcf</code></th>
+<th><code>sv_vcf</code></th>
+<th>Entry point</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FASTQ</td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>fastq</code></td>
+<td>Align, call SNVs/SVs, phase and annotate</td>
+</tr>
+<tr>
+<td>uBAM</td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>ubam</code></td>
+<td>Same as <code>fastq</code></td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>BAM</td>
+<td><code>0</code></td>
+<td><code>0</code></td>
+<td><code>bam</code></td>
+<td>Skip alignment; call SNVs/SVs, phase and annotate</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>BAM</td>
+<td>VCF</td>
+<td>VCF</td>
+<td><code>vcf</code></td>
+<td>Skip alignment and calling; phase and annotate only</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your FASTQ files do not contain modification tags (MM/ML), set <code>--skip_methylation_calling</code> to skip the methylation subworkflow.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">vcf entry point</p>
+<p><code>aligned_bam</code> is required alongside <code>snv_vcf</code> and <code>sv_vcf</code> - the BAM is still used for QC, phasing, and methylation calling. Providing VCF columns without <code>aligned_bam</code>, or providing only one of the two VCF columns, is an error. The pipeline publishes pre-phasing joint family VCFs to <code>snvs/family/{family}/{family}_snvs_unphased.vcf.gz</code> and <code>svs/family/{family}/{family}_svs_unphased.vcf.gz</code> on every run, which can be used as input for a subsequent <code>vcf</code> entry point run.</p>
+</div>
 <h3 id="presets">Presets</h3>
-<p>This pipeline comes with three different presets that should be set with the <code>--preset</code> parameter: <code>revio</code> (default), <code>pacbio</code> or <code>ONT_R10</code>. The preset parameter controls certain technology specific tools and parameters.</p>
+<p>This pipeline comes with four different presets that should be set with the <code>--preset</code> parameter: <code>revio</code> (default), <code>pacbio</code>, <code>ONT_R10</code> or <code>ONT_R10_AS</code>. The preset parameter controls certain technology specific tools and parameters.</p>
 <div class="admonition info">
 <p class="admonition-title">Preset effects on subworkflows</p>
 <ul>
-<li><code>--skip_repeat_annotation</code> will be set to <code>true</code> for <code>ONT_R10</code></li>
-<li><code>--skip_call_paralogs</code> will be set to <code>true</code> for <code>ONT_R10</code></li>
+<li><code>--skip_repeat_annotation</code> will be set to <code>true</code> for <code>ONT_R10</code> and <code>ONT_R10_AS</code></li>
+<li><code>--skip_call_paralogs</code> will be set to <code>true</code> for <code>ONT_R10</code> and <code>ONT_R10_AS</code></li>
 <li><code>--skip_methylation_calling</code> will be set to <code>true</code> for <code>pacbio</code></li>
+<li><code>--skip_mitochondrial_calling</code> will be set to <code>true</code> for <code>ONT_R10_AS</code></li>
+</ul>
+</div>
+<div class="admonition info">
+<p class="admonition-title">ONT_R10_AS — adaptive sampling preset</p>
+<p><code>ONT_R10_AS</code> is intended for Oxford Nanopore adaptive sampling runs. In adaptive sampling, the sequencer selectively enriches reads from target regions in real time; rejected off-target reads are still output and will map across the genome. The preset inherits all <code>ONT_R10</code> settings and adds targeted-run behaviour on top.</p>
+<p>Provide the BED file of enriched regions with <code>--target_regions</code>. This single parameter automatically sets all region-related parameters (<code>--mosdepth_regions</code>, <code>--modkit_include_bed</code>, <code>--snv_call_regions</code>, <code>--sv_call_regions</code>). The pipeline will then:</p>
+<ul>
+<li>Filter aligned reads to on-target regions before cramino QC, so yield and N50 reflect enriched reads only</li>
+<li>Run mosdepth with per-region depth and coverage thresholds (≥20X, ≥30X) for each target region</li>
 </ul>
 </div>
 <h3 id="reference-files">Reference files</h3>
@@ -1651,6 +1786,10 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 </tbody>
 </table>
 <p>Turned off with <code>--skip_alignment</code>.</p>
+<div class="admonition info">
+<p class="admonition-title">Using pbmm2 with fastq files</p>
+<p>pbmm2 can be used to align the reads to the reference. If you are running the pipeline with fastq files as input, they will be converted to bam files for the analysis, and a <code>DS:READTYPE=CCS</code> tag will be added to the header. Without this tag, pbmm2 will not be able to run successfully. This tag is only added under these conditions (pbmm2 as aligner and fastq as input).</p>
+</div>
 <h4 id="sex-check">Sex check</h4>
 <p>Some subworkflows are sex-dependent and need a sex-inference step if samples are input with unknown sex. This step requires <code>--somalier_sites</code>.</p>
 <table>
@@ -1716,6 +1855,14 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 <td>Path to the DNAscope model bundle to load. Sentieon provides pre-trained bundles in the <a href="https://github.com/Sentieon/sentieon-models">sentieon-models</a> repository.</td>
 </tr>
 <tr>
+<td><code>sentieon_population_vcf</code></td>
+<td>Population VCF containing annotations for DNAModelApply. Required for some model bundles; it must match <code>sentieon_model_bundle</code>.</td>
+</tr>
+<tr>
+<td><code>sentieon_population_tbi</code></td>
+<td>Matching tabix index for <code>sentieon_population_vcf</code>.</td>
+</tr>
+<tr>
 <td><code>sentieon_tech</code></td>
 <td>Sequencing technology used by Sentieon DNAscope (<code>HiFi</code> or <code>ONT</code>). Defaults to <code>HiFi</code>, but is automatically set to <code>ONT</code> when running with the ONT presets.</td>
 </tr>
@@ -1734,11 +1881,16 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 </tbody>
 </table>
 <p>All three Sentieon BED files and the model bundle must be provided when using Sentieon.</p>
+<p>If the selected model bundle requires population annotations, also supply <code>--sentieon_population_vcf</code> and <code>--sentieon_population_tbi</code>. Use the population VCF specified for that model bundle. The index filename must match the VCF filename with <code>.tbi</code> appended (for example, <code>population.vcf.gz.tbi</code>). These inputs can be omitted for model bundles that do not require a population VCF.</p>
 <p>Turned off with <code>--skip_snv_calling</code>.</p>
 <h4 id="call-svs">Call SVs</h4>
 <p>This subworkflow depends on the alignment subworkflow.</p>
 <p>Which callers to run and merge into family VCFs that are used for subsequent annotation and ranking is determined by the <code>--sv_callers</code> parameter, e.g. <code>--sv_callers sniffles,hificnv</code>. The priority of the merging in SVDB is set by the order of the callers. This can be overwritten with the <code>--sv_callers_merge_priority</code> parameter.</p>
 <p>Sometimes you might want to run more callers than you use for merging, this can be controlled with the <code>--sv_callers_to_run</code> and <code>--sv_callers_to_merge</code> parameters. By default these are the same as <code>--sv_callers</code> but can be overwritten.</p>
+<div class="admonition info">
+<p class="admonition-title">Choosing a Sniffles version</p>
+<p>Two versions of Sniffles are available: <code>sniffles</code> (v2) and <code>sniffles1</code> (v1.0.12). Both can be run at the same time, but only one can be merged. For example, <code>--sv_callers sniffles --sv_callers_to_run sniffles,sniffles1</code> calls SVs with both versions and merges only <code>sniffles</code> for annotation and ranking. With <code>--publish_unannotated_family_svs</code>, the <code>sniffles1</code> family VCF is published as <code>{family}_sniffles1_svs.vcf.gz</code>.</p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Variant merging strategies</p>
 <p>Variant calls from samples within the same family are first merged into one family-level VCF per caller. Then, the family-caller files are merged into a final family file, which can then be annotated, ranked and filtered. The merging is done in this order so that different callers can have different merge parameters.</p>
@@ -1748,6 +1900,44 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 <p class="admonition-title">Family-level VCFs per caller</p>
 <p>Unannotated family-level VCFs per caller can be output with <code>--publish_unannotated_family_svs</code>.</p>
 </div>
+<p>The SVDB matching settings of the two merging steps are set with the parameters below. Each is available for the merge of one caller across samples (<code>svdb_merge_by_caller_*</code>) and for the merge of callers into the family VCF (<code>svdb_merge_by_family_*</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default (by caller / by family)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>svdb_merge_by_caller_overlap</code>, <code>svdb_merge_by_family_overlap</code></td>
+<td><strong>Optional</strong>: Minimum reciprocal overlap for deletions and duplications (0-1)</td>
+<td>0.5 / 0.7</td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_bnd_distance</code>, <code>svdb_merge_by_family_bnd_distance</code></td>
+<td><strong>Optional</strong>: Maximum distance in bp between breakpoints of translocations and inversions</td>
+<td>1000 / 2000</td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_ins_distance</code>, <code>svdb_merge_by_family_ins_distance</code></td>
+<td><strong>Optional</strong>: Maximum distance in bp between insertion positions</td>
+<td>100 / 100</td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_ins_svlen_ratio</code>, <code>svdb_merge_by_family_ins_svlen_ratio</code></td>
+<td><strong>Optional</strong>: Minimum ratio of the smaller to the larger insertion length (0-1)</td>
+<td>0.5 / 0.5</td>
+</tr>
+<tr>
+<td><code>svdb_merge_by_caller_ins_seq_similarity</code>, <code>svdb_merge_by_family_ins_seq_similarity</code></td>
+<td><strong>Optional</strong>: Minimum insertion sequence similarity (0-1), 0 disables the sequence comparison</td>
+<td>0 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>Two settings are fixed and cannot be changed with these parameters: the merge by caller always uses <code>--bnd_distance 10000</code> for HiFiCNV, and adds <code>--no_intra</code> for Sawfish unless <code>--force_sawfish_joint_call_single_samples</code> is set.</p>
 <p>If HiFiCNV or Sawfish are used, the following files are required:</p>
 <table>
 <thead>
@@ -1772,12 +1962,60 @@ NB: The order of profiles is important! They are loaded in sequence, so later pr
 </tbody>
 </table>
 <p>By default, HiFiCNV and Sawfish output optional SNV MAF tracks. This depends on the results of the SNV calling subworkflow, so it may introduce significant wait time and slow down execution.
-You can disable this behavior for both callers by setting <code>--create_maf_track</code> to <code>false</code> or control it for each caller separately using <code>--create_hificnv_maf_track</code> and <code>--create_sawfish_maf_track</code>.</p>
+You can disable this behavior for both callers by setting <code>--create_maf_track</code> to <code>false</code> or control it for each caller separately using <code>--create_hificnv_maf_track</code> and <code>--create_sawfish_maf_track</code>.
+With the MAF track disabled, HiFiCNV and Sawfish also run with <code>--skip_snv_calling</code>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Family-level VCFs per caller</p>
 <p>Unannotated family-level VCFs per caller can be output with <code>--publish_unannotated_family_svs</code>.</p>
 </div>
 <p>Turned off with <code>--skip_sv_calling</code>.</p>
+<h4 id="call-mitochondrial-variants">Call mitochondrial variants</h4>
+<p>This subworkflow specifically calls mitochondrial variants. The resulting VCF file is then merged together with the VCF containing the nuclear variants.
+The mitochondrial caller can be selected with <code>--mitochondrial_caller</code>. Note that the mitorsaw <a href="https://github.com/PacificBiosciences/mitorsaw/blob/main/LICENSE.md">license</a> doesn't generally allow usage of ONT data.</p>
+<table>
+<thead>
+<tr>
+<th>Caller</th>
+<th>Parameter value</th>
+<th>Compatible data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mitorsaw</td>
+<td><code>mitorsaw</code></td>
+<td>Pacbio</td>
+</tr>
+<tr>
+<td>Deepvariant</td>
+<td><code>deepvariant</code></td>
+<td>Pacbio, ONT</td>
+</tr>
+</tbody>
+</table>
+<p>The following parameters can be used:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mitorsaw_minimum_maf</code></td>
+<td>Minimum minor allele frequency (MAF) for mitorsaw variant calling.</td>
+</tr>
+<tr>
+<td><code>mitorsaw_minimum_read_count</code></td>
+<td>Minimum read count to consider a heteroplasmic variant.</td>
+</tr>
+<tr>
+<td><code>mitochondrial_sv_min_size</code></td>
+<td>Minimum allele length difference (abs(strlen(REF)-strlen(ALT))) to classify a mitochondrial variant as an SV rather than a SNV/small indel.</td>
+</tr>
+</tbody>
+</table>
 <h4 id="phasing">Phasing</h4>
 <p>This subworkflow phases variants and haplotags aligned BAM files, and such relies on the alignment, SNV calling subworkflows, but requires no additional files.</p>
 <p>If SVs were called, they are phased together with SNVs if supported by the selected phaser.
@@ -1815,7 +2053,7 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <p>Turned off with <code>--skip_phasing</code>.</p>
 <h4 id="methylation-calling">Methylation calling</h4>
 <p>This subworkflow relies on alignment and short variant calling subworkflows, but requires no additional files. By default, modkit is run when <code>--preset ONT_R10</code> is active, while methbat is run when <code>--preset revio</code> is active.</p>
-<p>If MethBat is used, it requires the following file:</p>
+<p>If MethBat is used, the following files are required:</p>
 <table>
 <thead>
 <tr>
@@ -1827,6 +2065,10 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <tr>
 <td><code>methbat_regions</code></td>
 <td>A tsv file with only regions of interest (<a href="https://github.com/PacificBiosciences/MethBat/blob/main/data/cpgIslandExt.sorted.hg38.tsv">example</a>), or with both regions and background cohort values (<a href="https://github.com/PacificBiosciences/MethBat/blob/main/data/meth_profile_model.tsv">example</a>), made with methbat build</td>
+</tr>
+<tr>
+<td><code>methbat_map</code></td>
+<td>A tsv file mapping genomic regions to HGNC gene names and region types (e.g. imprinted regions, promoters), used to annotate methbat output. Required when <code>--skip_methylation_annotation</code> is not set.</td>
 </tr>
 </tbody>
 </table>
@@ -1986,6 +2228,18 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <td><code>echtvar_snv_databases</code> <sup>2</sup></td>
 <td><strong>Optional</strong>: A CSV/TSV/JSON/YAML file with annotation databases from <a href="https://github.com/brentp/echtvar">echtvar encode</a> (e.g. <a href="https://surfdrive.surf.nl/files/index.php/s/LddbAYQAYPqtYu6/download"><code>gnomad.v3.1.2.echtvar.popmax.v2.zip</code></a>)</td>
 </tr>
+<tr>
+<td><code>extra_vep_options_snv</code></td>
+<td><strong>Optional</strong>: Options appended to the VEP core command for nuclear SNV annotation. Defaults to standard enrichment annotations including SIFT and PolyPhen. To add plugins (e.g. CADD, SpliceAI), supply the default flags plus your additions (e.g. <code>'--buffer_size 20000 ... --plugin CADD,snv.tsv.gz'</code>). Plugin files must be included in <code>vep_plugin_files</code>.</td>
+</tr>
+<tr>
+<td><code>extra_vep_options_snv_mito</code></td>
+<td><strong>Optional</strong>: Options appended to the VEP core command for mitochondrial SNV annotation. Defaults to the same enrichment annotations as <code>extra_vep_options_snv</code> minus nuclear-only flags (<code>--sift</code>, <code>--polyphen</code>, <code>--humdiv</code>). To add MT-specific plugins (e.g. <code>gnomADMt</code> for heteroplasmy-aware allele frequencies), supply the default flags plus your additions. Plugin files must be included in <code>vep_plugin_files</code>.</td>
+</tr>
+<tr>
+<td><code>variant_consequences_snvs</code></td>
+<td>A list of SO terms listed in the order of severity from most severe to lease severe for annotating genomic and mitochondrial SNVs. Sample file <a href="https://github.com/nf-core/test-datasets/blob/raredisease/reference/variant_consequences_v2.txt">here</a>. You can learn more about these terms <a href="https://ensembl.org/info/genome/variation/prediction/predicted_data.html">here</a></td>
+</tr>
 </tbody>
 </table>
 <p><sup>1</sup> Example file for input with <code>--vep_plugin_files</code></p>
@@ -2008,7 +2262,7 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <p>Turned off with <code>--skip_snv_annotation</code>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If variants are annotated with allele frequecies, these can be used in the <code>chromograph</code> subworkflow to generate plots with regions of autozygosity from <a href="https://github.com/Clinical-Genomics/chromograph">chromograph</a>. By default only coverage plots are generated, since the pipeline doesn't require annotation with allele frequencies. Annotate variants with allele frequencies (e.g. from gnomAD), and set the tag using <code>--chromograph_af_tag</code>.</p>
+<p>If variants are annotated with allele frequencies, these can be used in the <code>chromograph</code> subworkflow to generate plots with regions of autozygosity from <a href="https://github.com/Clinical-Genomics/chromograph">chromograph</a>. By default only coverage plots are generated, since the pipeline doesn't require annotation with allele frequencies. Annotate variants with allele frequencies (e.g. from gnomAD), and set the tag using <code>--chromograph_af_tag</code>. If <code>echtvar</code> annotation is skipped, the unannotated vcfs can be used as input to <code>chromograph</code>.</p>
 </div>
 <h4 id="rank-snvs-and-indels">Rank SNVs and INDELs</h4>
 <p>This subworkflow ranks SNVs, and relies on the alignment, SNV calling and SNV annotation subworkflows. It requires the following additional files:</p>
@@ -2022,7 +2276,11 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <tbody>
 <tr>
 <td><code>genmod_score_config_snvs</code></td>
-<td> Used by GENMOD when ranking variants. Sample file <a href="https://github.com/nf-core/test-datasets/blob/raredisease/reference/rank_model_snv.ini">here</a></td>
+<td>Used by GENMOD when ranking nuclear SNVs. Sample file <a href="https://github.com/nf-core/test-datasets/blob/raredisease/reference/rank_model_snv.ini">here</a></td>
+</tr>
+<tr>
+<td><code>genmod_score_config_snvs_mito</code></td>
+<td><strong>Optional</strong>: Used by GENMOD when ranking mitochondrial SNVs. Should reference only fields produced by the MT VEP command (i.e. exclude nuclear-only annotations such as SIFT, PolyPhen, SpliceAI, LoFtool). If not provided, mitochondrial SNVs are not ranked.</td>
 </tr>
 <tr>
 <td><code>genmod_reduced_penetrance</code></td>
@@ -2053,6 +2311,51 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <tr>
 <td><code>vep_plugin_files</code> <sup>2</sup></td>
 <td>A CSV/TSV/JSON/YAML file with VEP plugin files, pLI and LoFtool are required. Example provided below.</td>
+</tr>
+<tr>
+<td><code>extra_vep_options_sv</code></td>
+<td><strong>Optional</strong>: Options appended to the VEP core command for SV annotation. Defaults to standard enrichment annotations. To add plugins, supply the default flags plus your additions (e.g. <code>'--appris --biotype ... --plugin CADD,sv.tsv.gz'</code>). Plugin files must be included in <code>vep_plugin_files</code>.</td>
+</tr>
+<tr>
+<td><code>variant_consequences_svs</code></td>
+<td>A list of SO terms listed in the order of severity from most severe to lease severe for annotating SVs. Sample file <a href="https://github.com/nf-core/test-datasets/blob/raredisease/reference/variant_consequences_v2.txt">here</a>. You can learn more about these terms <a href="https://ensembl.org/info/genome/variation/prediction/predicted_data.html">here</a></td>
+</tr>
+</tbody>
+</table>
+<p>The SVDB matching settings used when annotating against the databases are set with the parameters below.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>svdb_query_overlap</code></td>
+<td><strong>Optional</strong>: Minimum reciprocal overlap for deletions and duplications (0-1)</td>
+<td>0.7</td>
+</tr>
+<tr>
+<td><code>svdb_query_bnd_distance</code></td>
+<td><strong>Optional</strong>: Maximum distance in bp between breakpoints of translocations and inversions</td>
+<td>1000</td>
+</tr>
+<tr>
+<td><code>svdb_query_ins_distance</code></td>
+<td><strong>Optional</strong>: Maximum distance in bp between insertion positions</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code>svdb_query_ins_svlen_ratio</code></td>
+<td><strong>Optional</strong>: Minimum ratio of the smaller to the larger insertion length (0-1)</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td><code>svdb_query_ins_seq_similarity</code></td>
+<td><strong>Optional</strong>: Minimum insertion sequence similarity (0-1), 0 disables the sequence comparison</td>
+<td>0</td>
 </tr>
 </tbody>
 </table>
@@ -2106,21 +2409,31 @@ The phaser can be chosen using the <code>--phaser</code> argument. See the follo
 <td> Used by filter_vep to filter variants on HGNC IDs. Requires a tsv/csv file with a <code>hgnc_ids</code> column, that has one numerical HGNC ID per row, e.g. <code>4281</code> or <code>HGNC:4281</code>.</td>
 </tr>
 <tr>
-<td><code>filter_snvs_expression</code></td>
-<td>An expression that is passed to bcftools view to filter SNVs, e.g. <code>--filter_snvs_expression "-e 'INFO/AQ&gt;60'"</code></td>
+<td><code>filter_bcftools_snvs_expression</code></td>
+<td>An expression that is passed to bcftools view to filter SNVs, e.g. <code>--filter_bcftools_snvs_expression "-e 'INFO/AQ&gt;60'"</code></td>
 </tr>
 <tr>
-<td><code>filter_svs_expression</code></td>
-<td>An expression that is passed to bcftools view to filter SVs, e.g.<code>--filter_snvs_expression "-e 'INFO/AQ&gt;60'"</code></td>
+<td><code>filter_bcftools_svs_expression</code></td>
+<td>An expression that is passed to bcftools view to filter SVs, e.g.<code>--filter_bcftools_svs_expression "-e 'INFO/AQ&gt;60'"</code></td>
+</tr>
+<tr>
+<td><code>filter_vep_snvs_expression</code></td>
+<td>An expression passed to filter_vep for SNVs, e.g. <code>--filter_vep_snvs_expression "IMPACT is HIGH"</code>. Do not include <code>--filter</code>.</td>
+</tr>
+<tr>
+<td><code>filter_vep_svs_expression</code></td>
+<td>An expression passed to filter_vep for SVs, e.g. <code>--filter_vep_svs_expression "IMPACT is HIGH"</code>. Do not include <code>--filter</code>.</td>
 </tr>
 </tbody>
 </table>
+<p>VEP expressions can be used without an HGNC ID file. When both are supplied, the HGNC restriction and the expression are parenthesized and combined with <code>and</code> in a single VEP filter. If a bcftools expression is also supplied, bcftools filtering runs before VEP filtering.</p>
+<p>The <code>ENSEMBLVEP_FILTERVEP</code> module runs <code>filter_vep</code> with <code>--only_matched</code>. This removes non-matching <code>CSQ</code> consequence annotations from retained variants in the clinical VCF, as well as removing variants with no matching annotation. This applies to both the VEP expressions and the HGNC ID filter.</p>
 <p><sup>1</sup> Example file for input with <code>--filter_variants_hgnc_ids</code>:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>hgnc_id
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>4865
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>14150
 </span></code></pre></div>
-<p>Filtering of variants only happens if any of these three parameters is active.</p>
+<p>Filtering of variants only happens if any of these five parameters is active.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The <code>pre_vep_snv_filter_expression</code> parameter can be used to filter SNVs earlier, during the annotation step. Note that this filter applies to <em>both</em> the research and clinical VCFs.</p>
@@ -2215,7 +2528,7 @@ Some HPC setups also allow you to run nextflow within a cluster job submitted yo
 <h2 id="nextflow-memory-requirements">Nextflow memory requirements</h2>
 <p>In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
 We recommend adding the following line to your environment to limit this (typically in <code>~/.bashrc</code> or <code>~./bash_profile</code>):</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">NXF_OPTS</span><span class="o">=</span><span class="s1">&#39;-Xms1g -Xmx4g&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">NXF_OPTS</span><span class="o">=</span><span class="s1">'-Xms1g -Xmx4g'</span>
 </span></code></pre></div>
 <h2 id="running-the-pipeline-without-internet-access">Running the pipeline without internet access</h2>
 <h3 id="download-pipeline-and-containers">Download pipeline and containers</h3>
@@ -2318,10 +2631,10 @@ We recommend adding the following line to your environment to limit this (typica
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.instant", "navigation.top", "navigation.tracking", "navigation.sections", "navigation.footer", "search.share", "toc.follow"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>
